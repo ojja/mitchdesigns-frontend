@@ -7,6 +7,7 @@ import type {
   SeoData,
   Service,
   ServicePageData,
+  StrapiImage,
   Talk,
   TeamMember,
   TechItem,
@@ -166,7 +167,7 @@ function mapSeo(raw: RawRecord | undefined | null): SeoData | undefined {
     canonicalURL: (raw.canonicalURL as string) ?? undefined,
     ogTitle: (raw.ogTitle as string) ?? undefined,
     ogDescription: (raw.ogDescription as string) ?? undefined,
-    ogImage: (raw.ogImage as string) ?? undefined,
+    ogImage: (raw.ogImage as StrapiImage) ?? undefined,
     noIndex: (raw.noIndex as boolean) ?? false,
     structuredData: (raw.structuredData as string) ?? undefined,
   };
