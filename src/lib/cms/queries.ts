@@ -180,7 +180,7 @@ function mapServicePage(raw: RawRecord): ServicePageData {
   const prototypes = raw.prototypes as RawRecord;
 
   return {
-    seo: mapSeo(raw.seo),
+    seo: mapSeo(raw.seo as RawRecord),
     hero: {
       title: hero.title,
       titleHighlights: hero.titleHighlights ?? undefined,
