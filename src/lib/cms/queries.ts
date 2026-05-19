@@ -216,7 +216,7 @@ function mapServicePage(raw: any): ServicePageData {
           titleHighlights: raw.whyUs.titleHighlights ?? undefined,
           description: raw.whyUs.description ?? undefined,
           variant: raw.whyUs.variant ?? undefined,
-          cards: (raw.whyUs.cards ?? []).map((c: any) => ({
+          cards: (raw.whyUs.cards ?? []).map((c) => ({
             title: c.title,
             image: mediaUrl(c.image),
             imageAlt: mediaAlt(c.image),
@@ -229,7 +229,7 @@ function mapServicePage(raw: any): ServicePageData {
           title: raw.process.title,
           titleHighlights: raw.process.titleHighlights ?? undefined,
           description: raw.process.description ?? undefined,
-          processCards: (raw.process.processCards ?? []).map((c: any) => ({
+          processCards: (raw.process.processCards ?? []).map((c) => ({
             stepNumber: c.stepNumber,
             title: c.title,
             image: mediaUrl(c.image),
@@ -242,7 +242,7 @@ function mapServicePage(raw: any): ServicePageData {
       ? {
           title: raw.support.title,
           titleHighlights: raw.support.titleHighlights ?? undefined,
-          cards: (raw.support.cards ?? []).map((c: any) => ({
+          cards: (raw.support.cards ?? []).map((c) => ({
             title: c.title,
             image: mediaUrl(c.image),
             imageAlt: mediaAlt(c.image),
@@ -257,7 +257,7 @@ function mapServicePage(raw: any): ServicePageData {
           description: raw.featuresSimplified.description ?? undefined,
           image: mediaUrl(raw.featuresSimplified.image),
           imageAlt: mediaAlt(raw.featuresSimplified.image),
-          featureCards: (raw.featuresSimplified.featureCards ?? []).map((c: any) => ({
+          featureCards: (raw.featuresSimplified.featureCards ?? []).map((c) => ({
             title: c.title,
             label: c.label ?? undefined,
             description: c.description,
@@ -271,7 +271,7 @@ function mapServicePage(raw: any): ServicePageData {
           description: raw.accordion.description ?? undefined,
           image: mediaUrl(raw.accordion.image),
           imageAlt: mediaAlt(raw.accordion.image),
-          accordion: (raw.accordion.accordion ?? []).map((a: any, i: number) => ({
+          accordion: (raw.accordion.accordion ?? []).map((a, i) => ({
             id: a.id ?? String(i),
             title: a.title,
             content: a.content,
@@ -280,7 +280,7 @@ function mapServicePage(raw: any): ServicePageData {
       : undefined,
     numbers: raw.numbers
       ? {
-          numbers: (raw.numbers.numbers ?? []).map((n: any) => ({
+          numbers: (raw.numbers.numbers ?? []).map((n) => ({
             value: n.value,
             title: n.title,
             description: n.description ?? undefined,
@@ -298,7 +298,7 @@ function mapServicePage(raw: any): ServicePageData {
           title: raw.designsAdapt.title,
           titleHighlights: raw.designsAdapt.titleHighlights ?? undefined,
           description: raw.designsAdapt.description ?? undefined,
-          cards: (raw.designsAdapt.cards ?? []).map((c: any) => ({
+          cards: (raw.designsAdapt.cards ?? []).map((c) => ({
             title: c.title,
             description: c.description,
             image: mediaUrl(c.image),
@@ -311,7 +311,7 @@ function mapServicePage(raw: any): ServicePageData {
           title: raw.moreAbout.title,
           titleHighlights: raw.moreAbout.titleHighlights ?? undefined,
           description: raw.moreAbout.description ?? undefined,
-          cards: (raw.moreAbout.cards ?? []).map((c: any) => ({
+          cards: (raw.moreAbout.cards ?? []).map((c) => ({
             title: c.title,
             description: c.description,
             image: mediaUrl(c.image),
