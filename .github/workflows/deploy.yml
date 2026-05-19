@@ -1,0 +1,47 @@
+# Production deploy — triggers on push to `main`
+#
+# Flow: pnpm install → opennextjs-cloudflare build → deploy to Cloudflare Workers
+#
+# Required GitHub Secrets:
+#   CLOUDFLARE_ACCOUNT_ID  — from dash.cloudflare.com or `wrangler whoami`
+#   CLOUDFLARE_API_TOKEN   — API token with Edit Cloudflare Workers permission
+#   STRAPI_API_TOKEN       — read-only token from Strapi admin
+
+name: Deploy — Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build & deploy to Cloudflare
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build & deploy
+        run: pnpm deploy
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          NEXT_PUBLIC_STRAPI_URL: https://cms.mitchdesigns.com
+          STRAPI_API_TOKEN: ${{ secrets.STRAPI_API_TOKEN }}

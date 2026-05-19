@@ -1,0 +1,37 @@
+import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+
+const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  images: {
+    // Invalid src prop (http://localhost:1337/images/case-studies/el-gouna.webp) on `next/image`, hostname "localhost" is not configured under images in your `next.config.js`
+    // pub-aa7546047e2b40c9810cb247ee90e22d.r2.dev
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      // Add CMS image domains here, e.g.:
+      // { protocol: "https", hostname: "cdn.sanity.io" },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "https",
+        hostname: "pub-aa7546047e2b40c9810cb247ee90e22d.r2.dev",
+      },
+    ],
+  },
+  experimental: {
+    optimizePackageImports: ["framer-motion"],
+  },
+};
+
+export default function config(phase: string): NextConfig {
+  if (phase === PHASE_DEVELOPMENT_SERVER) {
+    initOpenNextCloudflareForDev({
+      configPath: "wrangler.dev.jsonc",
+    });
+  }
+
+  return nextConfig;
+}

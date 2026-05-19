@@ -1,0 +1,179 @@
+import type { Metadata } from "next";
+import { HeaderConfig } from "@/context/HeaderConfigContext";
+import { Hero, HeroSection } from "@/features/hero";
+import { AboutSection } from "@/features/about";
+import { ClientLogos } from "@/features/clients";
+import { ClientsTrust } from "@/features/ClientsTrust";
+import { FeaturedProjects } from "@/features/work";
+import { OurServices } from "@/features/services";
+import { OrderbaseOverview } from "@/features/orderbase";
+import { TestimonialMarqueeFetcher } from "@/features/testimonials";
+import { TechStackFetcher } from "@/features/tech";
+import { TalksSection } from "@/features/talks";
+import { CTABanner } from "@/features/cta";
+import { FAQSection } from "@/features/faqs";
+import { JsonLd } from "@/components/seo/JsonLd";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+import {
+  getCaseStudies,
+  getFAQs,
+  getServices,
+  getTalks,
+  getTestimonials,
+} from "@/lib/cms";
+import {
+  fixtureCaseStudies,
+  fixtureFAQs,
+  fixtureServices,
+  fixtureTalks,
+  fixtureTestimonials,
+} from "@/lib/cms/fixtures";
+
+async function safe<T>(p: Promise<T[]>, fallback: T[]): Promise<T[]> {
+  try {
+    const data = await p;
+    return data.length ? data : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export default async function HomePage() {
+  const [services, caseStudies, testimonials, faqs, talks] = await Promise.all([
+    safe(getServices(), fixtureServices),
+    safe(getCaseStudies({ featured: true, limit: 4 }), fixtureCaseStudies),
+    safe(getTestimonials(), fixtureTestimonials),
+    safe(getFAQs(), fixtureFAQs),
+    safe(getTalks(), fixtureTalks),
+  ]);
+
+  // Single @graph merges AggregateRating + FAQPage + HowTo into one <script> tag
+  const homeGraph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        name: "MitchDesigns",
+        url: "https://mitchdesigns.com",
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: "5",
+          bestRating: "5",
+          worstRating: "1",
+          ratingCount: testimonials.length,
+        },
+        review: testimonials
+          .filter((t) => t.googleReview)
+          .map((t) => ({
+            "@type": "Review",
+            author: { "@type": "Person", name: t.author },
+            reviewBody: t.quote,
+            reviewRating: { "@type": "Rating", ratingValue: "5" },
+          })),
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: { "@type": "Answer", text: faq.answer },
+        })),
+      },
+      {
+        "@type": "HowTo",
+        name: "How to Start a Project with MitchDesigns",
+        description:
+          "The step-by-step process for working with MitchDesigns — from first contact to product launch.",
+        totalTime: "PT8W",
+        step: [
+          {
+            "@type": "HowToStep",
+            position: 1,
+            name: "Request a Proposal",
+            text: "Fill out our quote form with your project goals, budget range, and timeline. We respond within 24 hours with initial thoughts.",
+            url: "https://mitchdesigns.com/quote",
+          },
+          {
+            "@type": "HowToStep",
+            position: 2,
+            name: "Discovery Call",
+            text: "We schedule a call to deeply understand your business, users, and success metrics. This shapes the entire project scope.",
+            url: "https://mitchdesigns.com/quote/schedule-call",
+          },
+          {
+            "@type": "HowToStep",
+            position: 3,
+            name: "Design & Prototype",
+            text: "Our designers build wireframes and high-fidelity prototypes in Figma. You review, give feedback, and we iterate until it's right.",
+          },
+          {
+            "@type": "HowToStep",
+            position: 4,
+            name: "Development",
+            text: "Engineers build the product using Next.js, React Native, or the right stack for your project — with regular demos throughout.",
+          },
+          {
+            "@type": "HowToStep",
+            position: 5,
+            name: "QA & Launch",
+            text: "We run thorough QA across devices and browsers, then manage the launch. You get full source code ownership and handoff documentation.",
+          },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <>
+      <JsonLd data={homeGraph} />
+      <HeaderConfig sticky={false} />
+      <Hero
+        eyebrow="MitchDesigns — Website & Mobile App Design Company Based in Egypt"
+        headline="Start Building Digital Experiences that"
+      />
+
+      <HeroSection />
+
+      <AboutSection />
+
+      <ClientLogos />
+
+      <ClientsTrust />
+
+      <FeaturedProjects caseStudies={caseStudies} theme="dark" />
+
+      <OurServices services={services} />
+
+      <OrderbaseOverview />
+
+      <TestimonialMarqueeFetcher />
+
+      <TechStackFetcher
+        title="Craft seamless digital platforms with our modern tech stack"
+        description="More than a stack — it's how we build reliable, scalable, and secure digital ecosystems for every client."
+      />
+
+      <TalksSection talks={talks} />
+
+      <FAQSection
+        faqs={faqs}
+        title="Got Questions?"
+        description="We've answered the most common ones to help you understand how we work and what to expect."
+        categories={[
+          "Mobile Apps",
+          "Corporate Websites",
+          "eCommerce",
+          "Booking Systems",
+          "Custom Software",
+          "Media Buying",
+          "SEO / AGO",
+        ]}
+        defaultCategory="Corporate Websites"
+      />
+      <CTABanner />
+    </>
+  );
+}

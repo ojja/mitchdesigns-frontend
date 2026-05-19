@@ -1,0 +1,151 @@
+"use client";
+
+import Link from "next/link";
+import { useRef } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useMotionValueEvent,
+  MotionValue,
+} from "framer-motion";
+import { Section } from "@/components/layout/Section";
+
+const STATS = [
+  { value: "20+", unit: "Years", label: "Years of experience," },
+  { value: "400+", unit: "Projects", label: "Delivered with Impact" },
+  { value: "30+", unit: "Experts", label: "Dedicated Team Members" },
+] as const;
+
+const GRAY_PARAGRAPHS =
+  "to results. From mobile app development to e-commerce solutions, from custom platforms to booking systems, every project is built for conversions.\n\nWe don’t chase “pretty” — we chase performance marketing, SEO, and measurable success. For us, it’s always about the user, the customer, and their experience. That’s why Mitch Designs has become the partner businesses trust when growth can’t wait.";
+
+const SIGNATURE = "Mitch";
+
+// How much of the 0-1 scroll range a single character takes to transition
+const CHAR_WINDOW = 0.08;
+
+function AnimatedChar({
+  char,
+  progress,
+  start,
+}: {
+  char: string;
+  progress: MotionValue<number>;
+  start: number;
+}) {
+  const color = useTransform(
+    progress,
+    [start, start + CHAR_WINDOW],
+    ["#414141", "#ffffff"],
+  );
+  if (char === "\n") return <br />;
+  return <motion.span style={{ color }}>{char}</motion.span>;
+}
+
+export function AboutSection() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 0.85", "end 0.25"],
+  });
+
+  // One-way progress — only ever increases so lit characters stay white
+  const animProgress = useMotionValue(0);
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    if (v > animProgress.get()) animProgress.set(v);
+  });
+
+  const grayChars = GRAY_PARAGRAPHS.split("");
+  const sigChars = SIGNATURE.split("");
+  const total = grayChars.length + sigChars.length;
+
+  // Signature chars start after all gray text chars, with a small gap
+  const sigOffset = grayChars.length / total + 0.04;
+
+  return (
+    <Section theme="dark" bleed>
+      <div className="container-page flex items-start justify-between gap-16 bg-black py-14">
+        {/* Left — stats + CTA */}
+        <div className="flex shrink-0 flex-col items-start justify-between self-stretch gap-11">
+          <ul className="flex flex-col gap-11">
+            {STATS.map(({ value, unit, label }) => (
+              <li key={value} className="flex flex-col items-start">
+                <div className="flex items-baseline gap-2.5">
+                  <span className="font-bold text-[4rem] leading-none text-white">
+                    {value}
+                  </span>
+                  <span className="font-light text-xl text-white">{unit}</span>
+                </div>
+                <span className="text-[13px] tracking-[0.01em] text-fg-muted">
+                  {label}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <Link
+            href="/about"
+            className="inline-flex items-center gap-2 rounded-full bg-[#373737] px-9 py-4 text-sm font-medium text-white transition-colors hover:bg-[#444]"
+          >
+            About Us
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              aria-hidden
+            >
+              <path
+                d="M4.167 10h11.666M10 4.167 15.833 10 10 15.833"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Link>
+        </div>
+
+        {/* Right — body copy + signature */}
+        <div ref={ref} className="flex max-w-[895px] flex-col gap-10">
+          <p className="text-[2rem] leading-normal tracking-[0.01em]">
+            <span className="text-white">
+              Since 2005, I&apos;ve built Mitch Designs in Egypt with one
+              belief, businesses deserve more than templates. As a website
+              design company in Egypt, we craft custom design that turns in
+            </span>
+            {grayChars.map((char, i) => (
+              <AnimatedChar
+                key={i}
+                char={char}
+                progress={animProgress}
+                start={i / total}
+              />
+            ))}
+          </p>
+
+          <span
+            className="font-signature"
+            style={{ fontSize: "clamp(6rem, 10vw, 10rem)", lineHeight: 1 }}
+            aria-hidden
+          >
+            {sigChars.map((char, i) => (
+              <AnimatedChar
+                key={i}
+                char={char}
+                progress={animProgress}
+                start={
+                  sigOffset +
+                  (i / sigChars.length) * (1 - sigOffset - CHAR_WINDOW)
+                }
+              />
+            ))}
+          </span>
+        </div>
+      </div>
+    </Section>
+  );
+}
