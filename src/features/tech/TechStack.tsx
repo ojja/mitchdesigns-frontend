@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { Section } from "@/components/layout/Section";
-import { strapiMedia } from "@/lib/cms/media";
 import type { TechItem } from "@/lib/cms/types";
 
 type TechStackProps = {
