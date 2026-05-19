@@ -159,7 +159,8 @@ function mediaAlt(m: { url: string; alternativeText?: string | null } | string |
   return m.alternativeText ?? undefined;
 }
 
-function mapSeo(raw: RawRecord | undefined | null): SeoData | undefined {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapSeo(raw: any): SeoData | undefined {
   if (!raw) return undefined;
   return {
     metaTitle: raw.metaTitle as string,
@@ -173,14 +174,13 @@ function mapSeo(raw: RawRecord | undefined | null): SeoData | undefined {
   };
 }
 
-type RawRecord = Record<string, unknown>;
-
-function mapServicePage(raw: RawRecord): ServicePageData {
-  const hero = raw.hero as RawRecord;
-  const prototypes = raw.prototypes as RawRecord;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapServicePage(raw: any): ServicePageData {
+  const hero = raw.hero;
+  const prototypes = raw.prototypes;
 
   return {
-    seo: mapSeo(raw.seo as RawRecord),
+    seo: mapSeo(raw.seo),
     hero: {
       title: hero.title,
       titleHighlights: hero.titleHighlights ?? undefined,
@@ -216,7 +216,7 @@ function mapServicePage(raw: RawRecord): ServicePageData {
           titleHighlights: raw.whyUs.titleHighlights ?? undefined,
           description: raw.whyUs.description ?? undefined,
           variant: raw.whyUs.variant ?? undefined,
-          cards: (raw.whyUs.cards ?? []).map((c: RawRecord) => ({
+          cards: (raw.whyUs.cards ?? []).map((c: any) => ({
             title: c.title,
             image: mediaUrl(c.image),
             imageAlt: mediaAlt(c.image),
@@ -229,7 +229,7 @@ function mapServicePage(raw: RawRecord): ServicePageData {
           title: raw.process.title,
           titleHighlights: raw.process.titleHighlights ?? undefined,
           description: raw.process.description ?? undefined,
-          processCards: (raw.process.processCards ?? []).map((c: RawRecord) => ({
+          processCards: (raw.process.processCards ?? []).map((c: any) => ({
             stepNumber: c.stepNumber,
             title: c.title,
             image: mediaUrl(c.image),
@@ -242,7 +242,7 @@ function mapServicePage(raw: RawRecord): ServicePageData {
       ? {
           title: raw.support.title,
           titleHighlights: raw.support.titleHighlights ?? undefined,
-          cards: (raw.support.cards ?? []).map((c: RawRecord) => ({
+          cards: (raw.support.cards ?? []).map((c: any) => ({
             title: c.title,
             image: mediaUrl(c.image),
             imageAlt: mediaAlt(c.image),
@@ -257,7 +257,7 @@ function mapServicePage(raw: RawRecord): ServicePageData {
           description: raw.featuresSimplified.description ?? undefined,
           image: mediaUrl(raw.featuresSimplified.image),
           imageAlt: mediaAlt(raw.featuresSimplified.image),
-          featureCards: (raw.featuresSimplified.featureCards ?? []).map((c: RawRecord) => ({
+          featureCards: (raw.featuresSimplified.featureCards ?? []).map((c: any) => ({
             title: c.title,
             label: c.label ?? undefined,
             description: c.description,
@@ -271,7 +271,7 @@ function mapServicePage(raw: RawRecord): ServicePageData {
           description: raw.accordion.description ?? undefined,
           image: mediaUrl(raw.accordion.image),
           imageAlt: mediaAlt(raw.accordion.image),
-          accordion: (raw.accordion.accordion ?? []).map((a: RawRecord, i: number) => ({
+          accordion: (raw.accordion.accordion ?? []).map((a: any, i: number) => ({
             id: a.id ?? String(i),
             title: a.title,
             content: a.content,
@@ -280,7 +280,7 @@ function mapServicePage(raw: RawRecord): ServicePageData {
       : undefined,
     numbers: raw.numbers
       ? {
-          numbers: (raw.numbers.numbers ?? []).map((n: RawRecord) => ({
+          numbers: (raw.numbers.numbers ?? []).map((n: any) => ({
             value: n.value,
             title: n.title,
             description: n.description ?? undefined,
@@ -298,7 +298,7 @@ function mapServicePage(raw: RawRecord): ServicePageData {
           title: raw.designsAdapt.title,
           titleHighlights: raw.designsAdapt.titleHighlights ?? undefined,
           description: raw.designsAdapt.description ?? undefined,
-          cards: (raw.designsAdapt.cards ?? []).map((c: RawRecord) => ({
+          cards: (raw.designsAdapt.cards ?? []).map((c: any) => ({
             title: c.title,
             description: c.description,
             image: mediaUrl(c.image),
@@ -311,7 +311,7 @@ function mapServicePage(raw: RawRecord): ServicePageData {
           title: raw.moreAbout.title,
           titleHighlights: raw.moreAbout.titleHighlights ?? undefined,
           description: raw.moreAbout.description ?? undefined,
-          cards: (raw.moreAbout.cards ?? []).map((c: RawRecord) => ({
+          cards: (raw.moreAbout.cards ?? []).map((c: any) => ({
             title: c.title,
             description: c.description,
             image: mediaUrl(c.image),
