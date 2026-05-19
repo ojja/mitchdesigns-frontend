@@ -161,14 +161,14 @@ function mediaAlt(m: { url: string; alternativeText?: string | null } | string |
 function mapSeo(raw: RawRecord | undefined | null): SeoData | undefined {
   if (!raw) return undefined;
   return {
-    metaTitle: raw.metaTitle,
-    metaDescription: raw.metaDescription,
-    canonicalURL: raw.canonicalURL ?? undefined,
-    ogTitle: raw.ogTitle ?? undefined,
-    ogDescription: raw.ogDescription ?? undefined,
-    ogImage: raw.ogImage ?? undefined,
-    noIndex: raw.noIndex ?? false,
-    structuredData: raw.structuredData ?? undefined,
+    metaTitle: raw.metaTitle as string,
+    metaDescription: raw.metaDescription as string,
+    canonicalURL: (raw.canonicalURL as string) ?? undefined,
+    ogTitle: (raw.ogTitle as string) ?? undefined,
+    ogDescription: (raw.ogDescription as string) ?? undefined,
+    ogImage: (raw.ogImage as string) ?? undefined,
+    noIndex: (raw.noIndex as boolean) ?? false,
+    structuredData: (raw.structuredData as string) ?? undefined,
   };
 }
 
