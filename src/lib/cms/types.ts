@@ -122,6 +122,12 @@ export type TechItem = {
   logo: StrapiImage;
 };
 
+export type ClientLogo = {
+  name: string;
+  logo: StrapiImage;
+  order?: number;
+};
+
 /* ------------------------------------------------------------------
  * Service page section prop types
  * Each section component re-exports its own type; these live here

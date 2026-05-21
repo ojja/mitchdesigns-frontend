@@ -5,30 +5,17 @@ import { flushSync } from "react-dom";
 import { useMotionValue, animate, motion } from "framer-motion";
 import Image from "next/image";
 import { Section } from "@/components/layout/Section";
+import { fixtureClientLogos } from "@/lib/cms/fixtures";
 
 export interface LogoEntry {
   src: string;
   alt: string;
 }
 
-// Fixture logos — replaced by Strapi media gallery when wired
-export const fixtureLogos: LogoEntry[] = [
-  { src: "/images/client-logos/d4adcf3bc98557a16755015c4af3cc3f4e4a3f92.png", alt: "El Gouna" },
-  { src: "/images/client-logos/Joula.png", alt: "Joula" },
-  { src: "/images/client-logos/sh.png", alt: "Sally Helmy" },
-  { src: "/images/client-logos/mg.png", alt: "MG" },
-  { src: "/images/client-logos/exc.png", alt: "Exception Pâtissier" },
-  { src: "/images/client-logos/b15c5fd6de0f860a24f79b5cae3a4ec0d8850e85.png", alt: "Cairo Cooking" },
-  { src: "/images/client-logos/25adc2a1534f6d2da6a579e0b4fa63c517a1cd3e.png", alt: "Ras Soma" },
-  { src: "/images/client-logos/gobill.png", alt: "Gobill" },
-  { src: "/images/client-logos/Almaza.png", alt: "Almaza Bay" },
-  { src: "/images/client-logos/lychee.png", alt: "Lychee" },
-  { src: "/images/client-logos/gobus.png", alt: "gobus" },
-  { src: "/images/client-logos/gdev.png", alt: "G Developments" },
-  { src: "/images/client-logos/mv.png", alt: "Mountain View" },
-  { src: "/images/client-logos/qwell.png", alt: "qwell" },
-  { src: "/images/client-logos/abu-auf.png", alt: "Abu Auf" },
-];
+const fallbackLogos: LogoEntry[] = fixtureClientLogos.map((item) => ({
+  src: item.logo.url,
+  alt: item.logo.alternativeText ?? item.name,
+}));
 
 const GRID_SIZE = 15;
 
@@ -38,18 +25,15 @@ const EASE_OUT: [number, number, number, number] = [0, 0, 0.35, 1];
 const MIN_DELAY = 2000;
 const MAX_DELAY = 4500;
 
-/** Pick a random item from pool, excluding `exclude`. Wraps to any item if pool has only one. */
 function pickNext(pool: LogoEntry[], exclude: LogoEntry): LogoEntry {
   const candidates = pool.length > 1 ? pool.filter((l) => l !== exclude) : pool;
   return candidates[Math.floor(Math.random() * candidates.length)]!;
 }
 
-/** Assign a random starting logo to each of the 15 grid slots (no two adjacent start on the same logo). */
 function buildInitial(pool: LogoEntry[]): LogoEntry[] {
   return Array.from({ length: GRID_SIZE }, (_, i) => pool[i % pool.length]!);
 }
 
-// One global animation lock so only one card flips at a time
 let activeCard: number | null = null;
 
 function LogoCard({
@@ -83,18 +67,15 @@ function LogoCard({
 
       activeCard = cardId;
 
-      // Phase 1: rotate to 90° (edge-on — card invisible)
       animate(rotY, 90, {
         duration: HALF_DURATION,
         ease: EASE_IN,
         onComplete() {
           if (!mountedRef.current) return;
           const incoming = nextLogoRef.current;
-          // Swap image while card is edge-on (invisible) — zero flash
           flushSync(() => setLogo(incoming));
           nextLogoRef.current = pickNext(pool, incoming);
           if (!mountedRef.current) return;
-          // Phase 2: rotate back to 0° revealing the new logo
           rotY.set(-90);
           animate(rotY, 0, {
             duration: HALF_DURATION,
@@ -130,13 +111,35 @@ function LogoCard({
   );
 }
 
-export interface ClientLogosProps {
-  /** Full logo pool from CMS. Defaults to fixture logos. Any length ≥ 1. */
-  logos?: LogoEntry[];
+function LogoGridSkeleton() {
+  return (
+    <div className="flex flex-col gap-4">
+      {[0, 1, 2].map((ri) => (
+        <div key={ri} className="flex gap-4">
+          {[0, 1, 2, 3, 4].map((ci) => (
+            <div
+              key={ci}
+              className="min-w-0 flex-1 h-[200px] rounded-[4px] border border-[#414141] animate-pulse bg-white/5"
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
 }
 
-export function ClientLogos({ logos = fixtureLogos }: ClientLogosProps) {
-  const initials = useMemo(() => buildInitial(logos), [logos]);
+export function ClientLogos() {
+  const [logos, setLogos] = useState<LogoEntry[] | null>(null);
+
+  useEffect(() => {
+    fetch("/api/client-logos")
+      .then((r) => r.json())
+      .then((data: LogoEntry[]) => setLogos(data.length >= GRID_SIZE ? data : fallbackLogos))
+      .catch(() => setLogos(fallbackLogos));
+  }, []);
+
+  const pool = logos ?? fallbackLogos;
+  const initials = useMemo(() => buildInitial(pool), [pool]);
 
   const rows = [
     initials.slice(0, 5),
@@ -151,23 +154,27 @@ export function ClientLogos({ logos = fixtureLogos }: ClientLogosProps) {
           Our <span className="text-yellow">Agency</span> Experience
         </h2>
 
-        <div className="flex flex-col gap-4">
-          {rows.map((row, ri) => (
-            <div key={ri} className="flex gap-4">
-              {row.map((initial, ci) => {
-                const cardId = ri * 5 + ci;
-                return (
-                  <LogoCard
-                    key={cardId}
-                    cardId={cardId}
-                    pool={logos}
-                    initial={initial}
-                  />
-                );
-              })}
-            </div>
-          ))}
-        </div>
+        {logos === null ? (
+          <LogoGridSkeleton />
+        ) : (
+          <div className="flex flex-col gap-4">
+            {rows.map((row, ri) => (
+              <div key={ri} className="flex gap-4">
+                {row.map((initial, ci) => {
+                  const cardId = ri * 5 + ci;
+                  return (
+                    <LogoCard
+                      key={cardId}
+                      cardId={cardId}
+                      pool={pool}
+                      initial={initial}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </Section>
   );

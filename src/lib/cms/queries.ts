@@ -4,6 +4,7 @@ import { getCollection } from "./strapi";
 import type {
   CaseStudy,
   Career,
+  ClientLogo,
   FAQ,
   SeoData,
   Service,
@@ -134,6 +135,30 @@ export const getTeam = () =>
     revalidate: 300,
     query: { populate: "photo" },
   });
+
+/* ------------------------------------------------------------------
+ * Client logos
+ * ------------------------------------------------------------------ */
+export async function getClientLogos(): Promise<Array<{ name: string; src: string; alt: string }>> {
+  try {
+    const items = await getCollection<ClientLogo>("/client-logos", {
+      revalidate: 300,
+      query: { populate: "logo", sort: "order:asc" },
+    });
+    return items.map((item) => ({
+      name: item.name,
+      src: item.logo.url,
+      alt: item.logo.alternativeText ?? item.name,
+    }));
+  } catch {
+    const { fixtureClientLogos } = await import("./fixtures");
+    return fixtureClientLogos.map((item) => ({
+      name: item.name,
+      src: item.logo.url,
+      alt: item.logo.alternativeText ?? item.name,
+    }));
+  }
+}
 
 /* ------------------------------------------------------------------
  * Tech stack

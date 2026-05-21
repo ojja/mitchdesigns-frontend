@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "pub-aa7546047e2b40c9810cb247ee90e22d.r2.dev",
       },
+      {
+        protocol: "https",
+        hostname: "cms.mitchdesigns.com",
+      },
     ],
   },
   experimental: {

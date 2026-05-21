@@ -5,6 +5,7 @@
  */
 import type {
   CaseStudy,
+  ClientLogo,
   FAQ,
   Service,
   Talk,
@@ -13,6 +14,24 @@ import type {
 } from "./types";
 
 type WithId<T> = T & { id: number };
+
+export const fixtureClientLogos: Array<WithId<ClientLogo>> = [
+  { id: 1,  name: "El Gouna",           logo: { url: "/images/client-logos/d4adcf3bc98557a16755015c4af3cc3f4e4a3f92.png", alternativeText: "El Gouna" },           order: 1 },
+  { id: 2,  name: "Joula",              logo: { url: "/images/client-logos/Joula.png",   alternativeText: "Joula" },              order: 2 },
+  { id: 3,  name: "Sally Helmy",        logo: { url: "/images/client-logos/sh.png",      alternativeText: "Sally Helmy" },        order: 3 },
+  { id: 4,  name: "MG",                 logo: { url: "/images/client-logos/mg.png",      alternativeText: "MG" },                 order: 4 },
+  { id: 5,  name: "Exception Pâtissier",logo: { url: "/images/client-logos/exc.png",     alternativeText: "Exception Pâtissier" },order: 5 },
+  { id: 6,  name: "Cairo Cooking",      logo: { url: "/images/client-logos/b15c5fd6de0f860a24f79b5cae3a4ec0d8850e85.png", alternativeText: "Cairo Cooking" }, order: 6 },
+  { id: 7,  name: "Ras Soma",           logo: { url: "/images/client-logos/25adc2a1534f6d2da6a579e0b4fa63c517a1cd3e.png", alternativeText: "Ras Soma" },      order: 7 },
+  { id: 8,  name: "Gobill",             logo: { url: "/images/client-logos/gobill.png",  alternativeText: "Gobill" },             order: 8 },
+  { id: 9,  name: "Almaza Bay",         logo: { url: "/images/client-logos/Almaza.png",  alternativeText: "Almaza Bay" },         order: 9 },
+  { id: 10, name: "Lychee",             logo: { url: "/images/client-logos/lychee.png",  alternativeText: "Lychee" },             order: 10 },
+  { id: 11, name: "gobus",              logo: { url: "/images/client-logos/gobus.png",   alternativeText: "gobus" },              order: 11 },
+  { id: 12, name: "G Developments",     logo: { url: "/images/client-logos/gdev.png",    alternativeText: "G Developments" },     order: 12 },
+  { id: 13, name: "Mountain View",      logo: { url: "/images/client-logos/mv.png",      alternativeText: "Mountain View" },      order: 13 },
+  { id: 14, name: "qwell",              logo: { url: "/images/client-logos/qwell.png",   alternativeText: "qwell" },              order: 14 },
+  { id: 15, name: "Abu Auf",            logo: { url: "/images/client-logos/abu-auf.png", alternativeText: "Abu Auf" },            order: 15 },
+];
 
 export const fixtureServices: Array<WithId<Service>> = [
   {

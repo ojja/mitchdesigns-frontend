@@ -1,2 +1,2 @@
 export { ClientLogos } from "./ClientLogos";
-export type { ClientLogosProps, LogoEntry } from "./ClientLogos";
+export type { LogoEntry } from "./ClientLogos";
