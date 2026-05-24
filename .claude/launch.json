@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "frontend",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["dev"],
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["/Users/ojja/Documents/Claude/Projects/MD-website-v1/frontend/.claude/dev.sh"],
       "port": 3000
     }
   ]
