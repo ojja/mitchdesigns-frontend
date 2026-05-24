@@ -1,4 +1,5 @@
 export { TalksList } from "./TalksList";
+export { TalksHero } from "./TalksHero";
 export { TalksSection } from "./TalksSection";
 export { TalkHero } from "./TalkHero";
 export { TalkContent } from "./TalkContent";

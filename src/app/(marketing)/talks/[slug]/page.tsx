@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { getTalk, getTalks } from "@/lib/cms";
 import { fixtureTalks } from "@/lib/cms/fixtures";
 import { TalkHero, TalkContent, RelatedTalks } from "@/features/talks";
+import { extractToc } from "@/features/talks/TalkContent";
 import type { Talk } from "@/lib/cms/types";
 
 type Params = { slug: string };
@@ -61,20 +62,20 @@ export async function generateMetadata({
 
   if (!talk) return { title: slug.replace(/-/g, " ") };
 
-  const title = `${talk.title} — ${talk.event}`;
+  const title = `${talk.title} — MitchDesigns`;
   const description = talk.excerpt;
 
   return {
     title,
     description,
-    authors: [{ name: "Mitch", url: "https://mitchdesigns.com/about" }],
+    authors: [{ name: talk.author ?? "Mitch", url: "https://mitchdesigns.com/about" }],
     alternates: { canonical: `/talks/${slug}` },
     openGraph: {
       title,
       description,
       url: `https://mitchdesigns.com/talks/${slug}`,
       type: "article",
-      publishedTime: talk.date,
+      publishedTime: talk.publishedAt ?? talk.date,
       authors: ["https://mitchdesigns.com/about"],
       ...(talk.cover?.url
         ? {
@@ -106,7 +107,7 @@ export default async function SingleTalkPage({
   } catch { /* fall through */ }
 
   const sorted = [...allTalks].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    (a, b) => new Date(b.publishedAt ?? b.date ?? 0).getTime() - new Date(a.publishedAt ?? a.date ?? 0).getTime(),
   );
   const idx = sorted.findIndex((t) => t.slug === slug);
   const prev = idx < sorted.length - 1 ? sorted[idx + 1] : undefined;
@@ -144,13 +145,15 @@ export default async function SingleTalkPage({
     "@type": "Article",
     headline: talk.title,
     description: talk.excerpt,
-    datePublished: talk.date,
-    dateModified: talk.date, // TODO: update to actual modified date from CMS
+    datePublished: talk.publishedAt ?? talk.date,
+    dateModified: talk.publishedAt ?? talk.date,
     author: AUTHOR,
     publisher: PUBLISHER,
     url: `https://mitchdesigns.com/talks/${slug}`,
     inLanguage: "en",
-    about: talk.tags?.map((tag) => ({ "@type": "Thing", name: tag })),
+    about: talk.category
+      ? [{ "@type": "Thing", name: talk.category }]
+      : talk.tags?.map((tag) => ({ "@type": "Thing", name: tag })),
     ...(talk.cover?.url
       ? {
           image: {
@@ -167,7 +170,7 @@ export default async function SingleTalkPage({
       <JsonLd data={breadcrumbSchema} />
       <JsonLd data={articleSchema} />
       <TalkHero talk={talk} />
-      <TalkContent talk={talk} prev={prev} next={next} />
+      <TalkContent talk={talk} toc={extractToc(talk.sections)} prev={prev} next={next} />
       <RelatedTalks talks={related} />
     </>
   );

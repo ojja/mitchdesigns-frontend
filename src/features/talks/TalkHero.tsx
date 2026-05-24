@@ -43,7 +43,9 @@ export function TalkHero({ talk }: { talk: Talk }) {
           <div className="flex flex-1 flex-col items-start gap-6">
             {/* Date + read time */}
             <div className="flex items-center gap-3 text-[16px] text-[#d6d6d6]">
-              <span>{formatDate(talk.date)}</span>
+              {(talk.publishedAt ?? talk.date) && (
+                <span>{formatDate((talk.publishedAt ?? talk.date)!)}</span>
+              )}
               {talk.readTime != null && (
                 <>
                   <span className="size-1 rounded-full bg-[#d6d6d6]" aria-hidden />
@@ -53,11 +55,12 @@ export function TalkHero({ talk }: { talk: Talk }) {
             </div>
 
             {/* Tags */}
-            {talk.tags && talk.tags.length > 0 && (
+            {(talk.category ?? talk.tags?.length) && (
               <div className="flex flex-wrap gap-2">
-                {talk.tags.map((tag) => (
-                  <TagPill key={tag} label={tag} />
-                ))}
+                {talk.category
+                  ? <TagPill label={talk.category} />
+                  : talk.tags?.map((tag) => <TagPill key={tag} label={tag} />)
+                }
               </div>
             )}
 

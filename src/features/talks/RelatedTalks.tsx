@@ -37,9 +37,16 @@ function RelatedCard({ talk }: { talk: Talk }) {
       <div className="flex flex-col gap-8">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
           <div className="flex flex-wrap gap-2">
-            {talk.tags?.map((tag) => <TagPill key={tag} label={tag} />)}
+            {talk.category
+              ? <TagPill label={talk.category} />
+              : talk.tags?.map((tag) => <TagPill key={tag} label={tag} />)
+            }
           </div>
-          <span className="text-[16px] text-[#515151]">{formatDate(talk.date)}</span>
+          {(talk.publishedAt ?? talk.date) && (
+            <span className="text-[16px] text-[#515151]">
+              {formatDate((talk.publishedAt ?? talk.date)!)}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-2.5">

@@ -4,6 +4,7 @@
  * Remove or trim once Strapi has real content.
  */
 import type {
+  BlogSection,
   CaseStudy,
   ClientLogo,
   FAQ,
@@ -16,21 +17,123 @@ import type {
 type WithId<T> = T & { id: number };
 
 export const fixtureClientLogos: Array<WithId<ClientLogo>> = [
-  { id: 1,  name: "El Gouna",           logo: { url: "/images/client-logos/d4adcf3bc98557a16755015c4af3cc3f4e4a3f92.png", alternativeText: "El Gouna" },           order: 1 },
-  { id: 2,  name: "Joula",              logo: { url: "/images/client-logos/Joula.png",   alternativeText: "Joula" },              order: 2 },
-  { id: 3,  name: "Sally Helmy",        logo: { url: "/images/client-logos/sh.png",      alternativeText: "Sally Helmy" },        order: 3 },
-  { id: 4,  name: "MG",                 logo: { url: "/images/client-logos/mg.png",      alternativeText: "MG" },                 order: 4 },
-  { id: 5,  name: "Exception Pâtissier",logo: { url: "/images/client-logos/exc.png",     alternativeText: "Exception Pâtissier" },order: 5 },
-  { id: 6,  name: "Cairo Cooking",      logo: { url: "/images/client-logos/b15c5fd6de0f860a24f79b5cae3a4ec0d8850e85.png", alternativeText: "Cairo Cooking" }, order: 6 },
-  { id: 7,  name: "Ras Soma",           logo: { url: "/images/client-logos/25adc2a1534f6d2da6a579e0b4fa63c517a1cd3e.png", alternativeText: "Ras Soma" },      order: 7 },
-  { id: 8,  name: "Gobill",             logo: { url: "/images/client-logos/gobill.png",  alternativeText: "Gobill" },             order: 8 },
-  { id: 9,  name: "Almaza Bay",         logo: { url: "/images/client-logos/Almaza.png",  alternativeText: "Almaza Bay" },         order: 9 },
-  { id: 10, name: "Lychee",             logo: { url: "/images/client-logos/lychee.png",  alternativeText: "Lychee" },             order: 10 },
-  { id: 11, name: "gobus",              logo: { url: "/images/client-logos/gobus.png",   alternativeText: "gobus" },              order: 11 },
-  { id: 12, name: "G Developments",     logo: { url: "/images/client-logos/gdev.png",    alternativeText: "G Developments" },     order: 12 },
-  { id: 13, name: "Mountain View",      logo: { url: "/images/client-logos/mv.png",      alternativeText: "Mountain View" },      order: 13 },
-  { id: 14, name: "qwell",              logo: { url: "/images/client-logos/qwell.png",   alternativeText: "qwell" },              order: 14 },
-  { id: 15, name: "Abu Auf",            logo: { url: "/images/client-logos/abu-auf.png", alternativeText: "Abu Auf" },            order: 15 },
+  {
+    id: 1,
+    name: "El Gouna",
+    logo: {
+      url: "/images/client-logos/d4adcf3bc98557a16755015c4af3cc3f4e4a3f92.png",
+      alternativeText: "El Gouna",
+    },
+    order: 1,
+  },
+  {
+    id: 2,
+    name: "Joula",
+    logo: { url: "/images/client-logos/Joula.png", alternativeText: "Joula" },
+    order: 2,
+  },
+  {
+    id: 3,
+    name: "Sally Helmy",
+    logo: {
+      url: "/images/client-logos/sh.png",
+      alternativeText: "Sally Helmy",
+    },
+    order: 3,
+  },
+  {
+    id: 4,
+    name: "MG",
+    logo: { url: "/images/client-logos/mg.png", alternativeText: "MG" },
+    order: 4,
+  },
+  {
+    id: 5,
+    name: "Exception Pâtissier",
+    logo: {
+      url: "/images/client-logos/exc.png",
+      alternativeText: "Exception Pâtissier",
+    },
+    order: 5,
+  },
+  {
+    id: 6,
+    name: "Cairo Cooking",
+    logo: {
+      url: "/images/client-logos/b15c5fd6de0f860a24f79b5cae3a4ec0d8850e85.png",
+      alternativeText: "Cairo Cooking",
+    },
+    order: 6,
+  },
+  {
+    id: 7,
+    name: "Ras Soma",
+    logo: {
+      url: "/images/client-logos/25adc2a1534f6d2da6a579e0b4fa63c517a1cd3e.png",
+      alternativeText: "Ras Soma",
+    },
+    order: 7,
+  },
+  {
+    id: 8,
+    name: "Gobill",
+    logo: { url: "/images/client-logos/gobill.png", alternativeText: "Gobill" },
+    order: 8,
+  },
+  {
+    id: 9,
+    name: "Almaza Bay",
+    logo: {
+      url: "/images/client-logos/Almaza.png",
+      alternativeText: "Almaza Bay",
+    },
+    order: 9,
+  },
+  {
+    id: 10,
+    name: "Lychee",
+    logo: { url: "/images/client-logos/lychee.png", alternativeText: "Lychee" },
+    order: 10,
+  },
+  {
+    id: 11,
+    name: "gobus",
+    logo: { url: "/images/client-logos/gobus.png", alternativeText: "gobus" },
+    order: 11,
+  },
+  {
+    id: 12,
+    name: "G Developments",
+    logo: {
+      url: "/images/client-logos/gdev.png",
+      alternativeText: "G Developments",
+    },
+    order: 12,
+  },
+  {
+    id: 13,
+    name: "Mountain View",
+    logo: {
+      url: "/images/client-logos/mv.png",
+      alternativeText: "Mountain View",
+    },
+    order: 13,
+  },
+  {
+    id: 14,
+    name: "qwell",
+    logo: { url: "/images/client-logos/qwell.png", alternativeText: "qwell" },
+    order: 14,
+  },
+  {
+    id: 15,
+    name: "Abu Auf",
+    logo: {
+      url: "/images/client-logos/abu-auf.png",
+      alternativeText: "Abu Auf",
+    },
+    order: 15,
+  },
 ];
 
 export const fixtureServices: Array<WithId<Service>> = [
@@ -100,11 +203,18 @@ export const fixtureCaseStudies: Array<WithId<CaseStudy>> = [
     client: "Orascom Development",
     tagline: "A digital roadmap for a destination brand.",
     excerpt: "",
-    services: ["Digital roadmap & strategy", "Website design & development", "SEO"],
+    services: [
+      "Digital roadmap & strategy",
+      "Website design & development",
+      "SEO",
+    ],
     category: "Corporate",
     year: 2018,
     cover: { url: "/images/case-studies/el-gouna.webp" },
-    logo: { url: "/images/client-logos/d4adcf3bc98557a16755015c4af3cc3f4e4a3f92.png", alternativeText: "El Gouna" },
+    logo: {
+      url: "/images/client-logos/d4adcf3bc98557a16755015c4af3cc3f4e4a3f92.png",
+      alternativeText: "El Gouna",
+    },
     testimonial: {
       quote: "Very professional team. Their work is outstanding!",
       author: "Mona Maher",
@@ -121,7 +231,11 @@ export const fixtureCaseStudies: Array<WithId<CaseStudy>> = [
     client: "Lychee",
     tagline: "A unified ordering platform for restaurants.",
     excerpt: "",
-    services: ["Digital roadmap & strategy", "Website design & development", "Content creation"],
+    services: [
+      "Digital roadmap & strategy",
+      "Website design & development",
+      "Content creation",
+    ],
     category: "Mobile App",
     year: 2021,
     cover: { url: "/images/case-studies/lychee.webp" },
@@ -142,7 +256,11 @@ export const fixtureCaseStudies: Array<WithId<CaseStudy>> = [
     client: "Sally Helmy",
     tagline: "A personal brand built for impact.",
     excerpt: "",
-    services: ["Digital roadmap & strategy", "Website design & development", "Website administration"],
+    services: [
+      "Digital roadmap & strategy",
+      "Website design & development",
+      "Website administration",
+    ],
     category: "Corporate",
     year: 2020,
     cover: { url: "/images/case-studies/sally-helmy.webp" },
@@ -163,13 +281,21 @@ export const fixtureCaseStudies: Array<WithId<CaseStudy>> = [
     client: "G Developments",
     tagline: "A digital roadmap for a destination brand.",
     excerpt: "",
-    services: ["Digital roadmap & strategy", "Website design & development", "SEO"],
+    services: [
+      "Digital roadmap & strategy",
+      "Website design & development",
+      "SEO",
+    ],
     category: "Corporate",
     year: 2022,
     cover: { url: "/images/case-studies/el-gouna.webp" },
-    logo: { url: "/images/client-logos/gdev.png", alternativeText: "G Developments" },
+    logo: {
+      url: "/images/client-logos/gdev.png",
+      alternativeText: "G Developments",
+    },
     testimonial: {
-      quote: "From discovery to launch, every detail was considered. Our conversion rate jumped 38% in the first quarter.",
+      quote:
+        "From discovery to launch, every detail was considered. Our conversion rate jumped 38% in the first quarter.",
       author: "Nour El-Din",
       role: "Head of Product",
       avatar: { url: "/images/client-logos/gdev.png" },
@@ -629,29 +755,44 @@ export const fixtureTalks: Talk[] = [
   {
     slug: "design-for-conversion-not-compliments",
     title: "Design for Conversion, Not Compliments",
-    event: "Cairo Design Week",
-    date: "2027-02-21",
+    publishedAt: "2027-02-21T00:00:00.000Z",
     excerpt:
       "Great design isn't the one that gets likes — it's the one that gets results. This talk breaks down how aesthetic decisions directly impact user behavior, trust, and revenue, and why 'pretty' alone is a business risk.",
-    tags: ["Featured Talk"],
+    category: "Design",
     readTime: 6,
     featured: true,
     cover: {
       url: "/images/talks/featured.webp",
       alternativeText: "Design for Conversion talk",
     },
-    body: `
-  
-    `,
+    sections: [
+      {
+        __component: "blocks.rich-text" as const,
+        body: [
+          {
+            type: "paragraph",
+            children: [{ type: "text", text: "Great design isn't about aesthetics alone — it's about outcomes. Every visual decision carries a behavioral consequence, and the most dangerous design is the kind that looks good but converts poorly." }],
+          },
+          {
+            type: "heading",
+            level: 2,
+            children: [{ type: "text", text: "Why Pretty Isn't Enough" }],
+          },
+          {
+            type: "paragraph",
+            children: [{ type: "text", text: "Clients often measure design success by how much they like the result. But the real question is: does it work? Does it guide users toward action, build trust, and remove friction?" }],
+          },
+        ],
+      },
+    ],
   },
   {
     slug: "why-agency-websites-fail-ux",
     title: "Why Most Agency Websites Fail Their Own UX",
-    event: "UX Cairo",
-    date: "2026-12-15",
+    publishedAt: "2026-12-15T00:00:00.000Z",
     excerpt:
       "Agencies often promote UX but overlook it on their own websites. This article analyzes typical agency website errors and highlights what clients seek in a digital partner.",
-    tags: ["UX", "UI", "Interaction Design"],
+    category: "Design",
     readTime: 4,
     cover: {
       url: "/images/talks/agency-ux.webp",
@@ -660,12 +801,11 @@ export const fixtureTalks: Talk[] = [
   },
   {
     slug: "responsive-design-2027",
-    title: "Why Most Agency Websites Fail Their Own UX",
-    event: "Frontend Egypt",
-    date: "2027-01-02",
+    title: "Responsive Design in 2027",
+    publishedAt: "2027-01-02T00:00:00.000Z",
     excerpt:
       "Agencies often promote UX but overlook it on their own websites. This article analyzes typical agency website errors and highlights what clients seek in a digital partner.",
-    tags: ["UX", "UI", "Interaction Design"],
+    category: "Development",
     readTime: 5,
     cover: {
       url: "/images/talks/responsive.webp",
@@ -675,11 +815,10 @@ export const fixtureTalks: Talk[] = [
   {
     slug: "brand-identity-digital-products",
     title: "Building a Cohesive Brand Identity for Digital Products",
-    event: "Brand Cairo",
-    date: "2026-05-15",
+    publishedAt: "2026-05-15T00:00:00.000Z",
     excerpt:
       "A strong brand identity is essential for digital products. This article explores strategies for creating a cohesive brand experience across various platforms.",
-    tags: ["Branding", "Product Design"],
+    category: "Design",
     readTime: 4,
     cover: {
       url: "/images/talks/branding.webp",
@@ -689,11 +828,10 @@ export const fixtureTalks: Talk[] = [
   {
     slug: "user-research-techniques",
     title: "Understanding User Needs Through Effective Research Techniques",
-    event: "UX Research Summit",
-    date: "2026-05-15",
+    publishedAt: "2026-05-15T00:00:00.000Z",
     excerpt:
       "Effective UX research techniques are crucial for understanding user needs. This piece delves into methods that can enhance your design process.",
-    tags: ["UX Research", "Product Design"],
+    category: "Design",
     readTime: 4,
     cover: {
       url: "/images/talks/research.webp",
@@ -703,11 +841,10 @@ export const fixtureTalks: Talk[] = [
   {
     slug: "motion-graphics-ui",
     title: "Elevating User Interfaces with Advanced Motion Graphics",
-    event: "Motion Design Cairo",
-    date: "2026-05-15",
+    publishedAt: "2026-05-15T00:00:00.000Z",
     excerpt:
       "Explore how integrating motion graphics can transform static UIs into engaging, intuitive experiences that guide users and enhance brand perception.",
-    tags: ["Motion Design"],
+    category: "Design",
     readTime: 4,
     cover: {
       url: "/images/talks/motion.webp",

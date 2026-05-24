@@ -53,19 +53,25 @@ export type CaseStudy = {
   testimonial?: CaseStudyTestimonial;
 };
 
+export type BlogSection =
+  | { __component: "blocks.rich-text"; body: unknown }
+  | { __component: "blocks.media-block"; file: StrapiImage; caption?: string | null };
+
 export type Talk = {
   slug: string;
   title: string;
-  event: string;
-  date: string; // ISO
-  location?: string;
   excerpt: string;
-  videoUrl?: string;
   cover?: StrapiImage;
-  body?: unknown;
-  tags?: string[];
-  readTime?: number; // minutes
+  sections?: BlogSection[];
+  author?: string;
+  publishedAt?: string;
+  category?: "Design" | "Development" | "Marketing" | "SEO" | "Business";
+  readTime?: number;
   featured?: boolean;
+  // Legacy / fixture-only fields
+  event?: string;
+  date?: string;
+  tags?: string[];
 };
 
 export type Career = {

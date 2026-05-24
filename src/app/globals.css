@@ -214,3 +214,7 @@
     scroll-behavior: auto !important;
   }
 }
+
+.blog-content p ~ h3 {
+  margin-top: 60px;
+}

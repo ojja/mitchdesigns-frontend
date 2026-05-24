@@ -1,37 +1,255 @@
 import Link from "next/link";
-import type { Talk } from "@/lib/cms/types";
+import type { Talk, BlogSection } from "@/lib/cms/types";
 import { Section } from "@/components/layout/Section";
 import { ArrowRight } from "@/components/icons/ArrowRight";
+import { TocSidebar } from "./TocSidebar";
 
-// ── TOC ────────────────────────────────────────────────────────────────────
+// ── Strapi Blocks types ────────────────────────────────────────────────────
+
+type TextNode = {
+  type: "text";
+  text: string;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  strikethrough?: boolean;
+  code?: boolean;
+};
+
+type InlineNode = TextNode;
+
+type ParagraphBlock = { type: "paragraph"; children: InlineNode[] };
+type HeadingBlock = {
+  type: "heading";
+  level: 1 | 2 | 3 | 4 | 5 | 6;
+  children: InlineNode[];
+};
+type QuoteBlock = { type: "quote"; children: InlineNode[] };
+type ImageBlock = {
+  type: "image";
+  image: {
+    url: string;
+    alternativeText?: string | null;
+    caption?: string | null;
+  };
+  children: InlineNode[];
+};
+type ListItemBlock = { type: "list-item"; children: InlineNode[] };
+type ListBlock = {
+  type: "list";
+  format: "ordered" | "unordered";
+  children: ListItemBlock[];
+};
+type CodeBlock = { type: "code"; children: InlineNode[] };
+
+type Block =
+  | ParagraphBlock
+  | HeadingBlock
+  | QuoteBlock
+  | ImageBlock
+  | ListBlock
+  | CodeBlock;
+
+// ── TOC extraction ─────────────────────────────────────────────────────────
 
 export type TocItem = { label: string; href: string };
 
-function TableOfContents({ items }: { items: TocItem[] }) {
-  if (!items.length) return null;
+function headingId(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function blockText(children: InlineNode[]): string {
+  return children.map((c) => ("text" in c ? c.text : "")).join("");
+}
+
+export function extractToc(sections: BlogSection[] | undefined): TocItem[] {
+  if (!sections) return [];
+  const toc: TocItem[] = [];
+  for (const section of sections) {
+    if (section.__component !== "blocks.rich-text") continue;
+    if (!Array.isArray(section.body)) continue;
+    for (const block of section.body as Block[]) {
+      if (block.type === "heading" && block.level <= 3) {
+        const label = blockText(block.children);
+        toc.push({ label, href: `#${headingId(label)}` });
+      }
+    }
+  }
+  return toc;
+}
+
+// ── Inline text renderer ───────────────────────────────────────────────────
+
+function Inline({ nodes }: { nodes: InlineNode[] }) {
   return (
-    <div className="flex gap-5">
-      {/* Yellow/beige 4px bar */}
-      <div className="w-1 shrink-0 rounded-full bg-[#f9f7f1]" />
-      <ul className="flex flex-col gap-5 py-1.5">
-        {items.map((item, i) => (
-          <li key={item.href}>
-            <a
-              href={item.href}
-              className={
-                i === 0
-                  ? "text-[14px] font-medium leading-[1.3] text-black"
-                  : "text-[14px] leading-[1.3] text-[#575757]"
-              }
+    <>
+      {nodes.map((node, i) => {
+        if (node.type !== "text") return null;
+        let el: React.ReactNode = node.text;
+        if (node.bold) el = <strong key={i}>{el}</strong>;
+        if (node.italic) el = <em key={i}>{el}</em>;
+        if (node.underline) el = <u key={i}>{el}</u>;
+        if (node.strikethrough) el = <s key={i}>{el}</s>;
+        if (node.code)
+          el = (
+            <code
+              key={i}
+              className="rounded bg-[#f1f1f1] px-1 font-mono text-[0.85em]"
             >
-              {item.label}
-            </a>
-          </li>
-        ))}
-      </ul>
+              {el}
+            </code>
+          );
+        return <span key={i}>{el}</span>;
+      })}
+    </>
+  );
+}
+
+// ── Block renderers ────────────────────────────────────────────────────────
+
+function BlockParagraph({ block }: { block: ParagraphBlock }) {
+  return (
+    <p className="text-balance text-[24px] leading-[170%] text-black">
+      <Inline nodes={block.children} />
+    </p>
+  );
+}
+
+function BlockHeading({ block }: { block: HeadingBlock }) {
+  const text = blockText(block.children);
+  const id = headingId(text);
+
+  const Tag = `h${block.level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+  const className =
+    block.level <= 2
+      ? "text-[40px] font-bold leading-[1.1] text-black"
+      : "text-[28px] font-bold leading-[1.2] text-black border-l-3 border-yellow pl-3";
+
+  return (
+    <Tag id={id} className={className}>
+      <Inline nodes={block.children} />
+    </Tag>
+  );
+}
+
+function BlockQuote({ block }: { block: QuoteBlock }) {
+  return (
+    <blockquote className="inline-flex items-center border-l-[3px] border-yellow px-3 py-1">
+      <span className="text-[40px] font-bold leading-[48px] text-black">
+        <Inline nodes={block.children} />
+      </span>
+    </blockquote>
+  );
+}
+
+function BlockImage({ block }: { block: ImageBlock }) {
+  const caption = block.image.caption ?? block.image.alternativeText;
+  return (
+    <figure className="flex flex-col items-center gap-2">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={block.image.url}
+        alt={block.image.alternativeText ?? ""}
+        className="w-full rounded-[4px] object-cover"
+      />
+      {caption && (
+        <figcaption className="text-[16px] leading-[125%] text-grey-500">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+function BlockList({ block }: { block: ListBlock }) {
+  const Tag = block.format === "ordered" ? "ol" : "ul";
+  const markerClass = block.format === "ordered" ? "list-decimal" : "list-disc";
+  return (
+    <Tag
+      className={`flex flex-col gap-2 pl-6 text-[24px] leading-[170%] text-black ${markerClass}`}
+    >
+      {block.children.map((item, i) => (
+        <li key={i}>
+          <Inline nodes={item.children} />
+        </li>
+      ))}
+    </Tag>
+  );
+}
+
+function BlockCode({ block }: { block: CodeBlock }) {
+  return (
+    <pre className="overflow-x-auto rounded-[4px] bg-[#1d1d1b] p-6 text-[14px] leading-[1.6] text-[#f9f7f1]">
+      <code>{blockText(block.children)}</code>
+    </pre>
+  );
+}
+
+// ── Rich text section ──────────────────────────────────────────────────────
+
+function RichTextSection({ body }: { body: unknown }) {
+  if (!Array.isArray(body)) return null;
+  return (
+    <div className="flex flex-col gap-6 blog-content">
+      {(body as Block[]).map((block, i) => {
+        switch (block.type) {
+          case "paragraph":
+            return <BlockParagraph key={i} block={block} />;
+          case "heading":
+            return <BlockHeading key={i} block={block} />;
+          case "quote":
+            return <BlockQuote key={i} block={block} />;
+          case "image":
+            return <BlockImage key={i} block={block} />;
+          case "list":
+            return <BlockList key={i} block={block} />;
+          case "code":
+            return <BlockCode key={i} block={block} />;
+          default:
+            return null;
+        }
+      })}
     </div>
   );
 }
+
+// ── Sections renderer ──────────────────────────────────────────────────────
+
+function TalkSections({ sections }: { sections?: BlogSection[] }) {
+  if (!sections?.length) return null;
+  return (
+    <>
+      {sections.map((section, i) => {
+        if (section.__component === "blocks.rich-text") {
+          return <RichTextSection key={i} body={section.body} />;
+        }
+        if (section.__component === "blocks.media-block") {
+          return (
+            <figure key={i} className="flex flex-col items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={section.file.url}
+                alt={section.file.alternativeText ?? section.caption ?? ""}
+                className="w-full rounded-[4px] object-cover"
+              />
+              {section.caption && (
+                <figcaption className="text-[16px] leading-[125%] text-grey-500">
+                  {section.caption}
+                </figcaption>
+              )}
+            </figure>
+          );
+        }
+        return null;
+      })}
+    </>
+  );
+}
+
+// ── TOC sidebar ────────────────────────────────────────────────────────────
 
 // ── Social share ───────────────────────────────────────────────────────────
 
@@ -57,7 +275,15 @@ function ShareButtons({ url, title }: { url: string; title: string }) {
       href: `https://www.instagram.com/`,
       icon: (
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden>
-          <rect x="4" y="4" width="24" height="24" rx="6" stroke="#ffdb00" strokeWidth="2" />
+          <rect
+            x="4"
+            y="4"
+            width="24"
+            height="24"
+            rx="6"
+            stroke="#ffdb00"
+            strokeWidth="2"
+          />
           <circle cx="16" cy="16" r="5" stroke="#ffdb00" strokeWidth="2" />
           <circle cx="22.5" cy="9.5" r="1.5" fill="#ffdb00" />
         </svg>
@@ -79,7 +305,9 @@ function ShareButtons({ url, title }: { url: string; title: string }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <span className="text-[14px] font-medium text-black">Share Talk via:</span>
+      <span className="text-[14px] font-medium text-black">
+        Share Talk via:
+      </span>
       <div className="flex gap-3">
         {links.map((l) => (
           <a
@@ -96,26 +324,6 @@ function ShareButtons({ url, title }: { url: string; title: string }) {
       </div>
     </div>
   );
-}
-
-// ── Body renderer ──────────────────────────────────────────────────────────
-
-function TalkBody({ body }: { body?: unknown }) {
-  if (!body) return null;
-
-  if (typeof body === "string") {
-    return (
-      <div className="flex flex-col gap-[60px]">
-        {body.split(/\n{2,}/).map((para, i) => (
-          <p key={i} className="text-balance text-[24px] leading-[170%] text-black">
-            {para.trim()}
-          </p>
-        ))}
-      </div>
-    );
-  }
-
-  return null;
 }
 
 // ── Nav buttons ────────────────────────────────────────────────────────────
@@ -164,25 +372,32 @@ export function TalkContent({
         {/* Left sticky sidebar */}
         <aside className="w-[439px] shrink-0">
           <div className="sticky top-24 flex flex-col gap-[30px] py-10">
-            <TableOfContents items={toc} />
+            <TocSidebar items={toc} />
             <ShareButtons url={pageUrl} title={talk.title} />
           </div>
         </aside>
 
         {/* Right content */}
         <div className="flex flex-1 flex-col gap-[100px]">
-          <TalkBody body={talk.body} />
+          <TalkSections sections={talk.sections} />
 
-          {/* Prev / Next navigation */}
           {(prev || next) && (
             <div className="flex items-center justify-between">
               {prev ? (
-                <NavButton href={`/talks/${prev.slug}`} label="Previous Talk" direction="prev" />
+                <NavButton
+                  href={`/talks/${prev.slug}`}
+                  label="Previous Talk"
+                  direction="prev"
+                />
               ) : (
                 <span />
               )}
               {next ? (
-                <NavButton href={`/talks/${next.slug}`} label="Next Talk" direction="next" />
+                <NavButton
+                  href={`/talks/${next.slug}`}
+                  label="Next Talk"
+                  direction="next"
+                />
               ) : (
                 <span />
               )}

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "server-only";
-import { getCollection } from "./strapi";
+import { getCollection, getSingle } from "./strapi";
 import type {
   CaseStudy,
   Career,
@@ -31,12 +31,14 @@ export const getCaseStudies = (opts?: { featured?: boolean; limit?: number }) =>
     },
   });
 
-export const getCaseStudy = async (slug: string): Promise<(CaseStudy & { id: number }) | null> => {
+export const getCaseStudy = async (
+  slug: string,
+): Promise<(CaseStudy & { id: number }) | null> => {
   const results = await getCollection<CaseStudy>("/case-studies", {
     revalidate: 60,
     query: {
       "filters[slug][$eq]": slug,
-      "populate": "*",
+      populate: "*",
       "pagination[limit]": 1,
     },
   });
@@ -47,17 +49,20 @@ export const getCaseStudy = async (slug: string): Promise<(CaseStudy & { id: num
  * Talks
  * ------------------------------------------------------------------ */
 export const getTalks = () =>
-  getCollection<Talk>("/talks", {
+  getCollection<Talk>("/blogs", {
     revalidate: 120,
-    query: { populate: "cover", sort: "date:desc" },
+    query: { populate: "cover", sort: "publishedAt:desc" },
   });
 
-export const getTalk = async (slug: string): Promise<(Talk & { id: number }) | null> => {
-  const results = await getCollection<Talk>("/talks", {
+export const getTalk = async (
+  slug: string,
+): Promise<(Talk & { id: number }) | null> => {
+  const results = await getCollection<Talk>("/blogs", {
     revalidate: 120,
     query: {
       "filters[slug][$eq]": slug,
-      "populate": "*",
+      "populate[cover]": "true",
+      "populate[sections][populate]": "*",
       "pagination[limit]": 1,
     },
   });
@@ -73,12 +78,14 @@ export const getCareers = () =>
     query: { sort: "publishedAt:desc" },
   });
 
-export const getCareer = async (slug: string): Promise<(Career & { id: number }) | null> => {
+export const getCareer = async (
+  slug: string,
+): Promise<(Career & { id: number }) | null> => {
   const results = await getCollection<Career>("/careers", {
     revalidate: 60,
     query: {
       "filters[slug][$eq]": slug,
-      "populate": "*",
+      populate: "*",
       "pagination[limit]": 1,
     },
   });
@@ -106,7 +113,9 @@ export const getServices = () =>
     query: { populate: "icon" },
   });
 
-export const getService = async (slug: Service["slug"]): Promise<(Service & { id: number }) | null> => {
+export const getService = async (
+  slug: Service["slug"],
+): Promise<(Service & { id: number }) | null> => {
   const results = await getCollection<Service>("/our-services", {
     revalidate: 300,
     query: {
@@ -139,7 +148,9 @@ export const getTeam = () =>
 /* ------------------------------------------------------------------
  * Client logos
  * ------------------------------------------------------------------ */
-export async function getClientLogos(): Promise<Array<{ name: string; src: string; alt: string }>> {
+export async function getClientLogos(): Promise<
+  Array<{ name: string; src: string; alt: string }>
+> {
   try {
     const items = await getCollection<ClientLogo>("/client-logos", {
       revalidate: 300,
@@ -174,13 +185,25 @@ export const getTechStack = () =>
  * ------------------------------------------------------------------ */
 
 // Strapi returns media as { url, alternativeText, ... }. Section types use plain strings.
-function mediaUrl(m: { url: string; alternativeText?: string | null } | string | null | undefined): string {
+function mediaUrl(
+  m:
+    | { url: string; alternativeText?: string | null }
+    | string
+    | null
+    | undefined,
+): string {
   if (!m) return "";
   if (typeof m === "string") return m;
   return m.url;
 }
 
-function mediaAlt(m: { url: string; alternativeText?: string | null } | string | null | undefined): string | undefined {
+function mediaAlt(
+  m:
+    | { url: string; alternativeText?: string | null }
+    | string
+    | null
+    | undefined,
+): string | undefined {
   if (!m || typeof m === "string") return undefined;
   return m.alternativeText ?? undefined;
 }
@@ -281,11 +304,13 @@ function mapServicePage(raw: any): ServicePageData {
           description: raw.featuresSimplified.description ?? undefined,
           image: mediaUrl(raw.featuresSimplified.image),
           imageAlt: mediaAlt(raw.featuresSimplified.image),
-          featureCards: (raw.featuresSimplified.featureCards ?? []).map((c: any) => ({
-            title: c.title,
-            label: c.label ?? undefined,
-            description: c.description,
-          })),
+          featureCards: (raw.featuresSimplified.featureCards ?? []).map(
+            (c: any) => ({
+              title: c.title,
+              label: c.label ?? undefined,
+              description: c.description,
+            }),
+          ),
         }
       : undefined,
     accordion: raw.accordion
@@ -295,16 +320,18 @@ function mapServicePage(raw: any): ServicePageData {
           description: raw.accordion.description ?? undefined,
           image: mediaUrl(raw.accordion.image),
           imageAlt: mediaAlt(raw.accordion.image),
-          accordion: (raw.accordion.accordion ?? [] as any[]).map((a: any, i: number) => ({
-            id: a.id ?? String(i),
-            title: a.title,
-            content: a.content,
-          })),
+          accordion: (raw.accordion.accordion ?? ([] as any[])).map(
+            (a: any, i: number) => ({
+              id: a.id ?? String(i),
+              title: a.title,
+              content: a.content,
+            }),
+          ),
         }
       : undefined,
     numbers: raw.numbers
       ? {
-          numbers: (raw.numbers.numbers ?? [] as any[]).map((n: any) => ({
+          numbers: (raw.numbers.numbers ?? ([] as any[])).map((n: any) => ({
             value: n.value,
             title: n.title,
             description: n.description ?? undefined,
@@ -322,7 +349,7 @@ function mapServicePage(raw: any): ServicePageData {
           title: raw.designsAdapt.title,
           titleHighlights: raw.designsAdapt.titleHighlights ?? undefined,
           description: raw.designsAdapt.description ?? undefined,
-          cards: (raw.designsAdapt.cards ?? [] as any[]).map((c: any) => ({
+          cards: (raw.designsAdapt.cards ?? ([] as any[])).map((c: any) => ({
             title: c.title,
             description: c.description,
             image: mediaUrl(c.image),
@@ -335,7 +362,7 @@ function mapServicePage(raw: any): ServicePageData {
           title: raw.moreAbout.title,
           titleHighlights: raw.moreAbout.titleHighlights ?? undefined,
           description: raw.moreAbout.description ?? undefined,
-          cards: (raw.moreAbout.cards ?? [] as any[]).map((c: any) => ({
+          cards: (raw.moreAbout.cards ?? ([] as any[])).map((c: any) => ({
             title: c.title,
             description: c.description,
             image: mediaUrl(c.image),
@@ -349,27 +376,30 @@ function mapServicePage(raw: any): ServicePageData {
 export async function getServicePageData(
   slug: Service["slug"],
 ): Promise<ServicePageData> {
-  const results = await getCollection<Record<string, unknown>>("/service-pages", {
-    revalidate: 300,
-    query: {
-      "filters[slug][$eq]": slug,
-      // Flat sections — one level of populate gets all their fields + media
-      "populate[hero][populate]": "*",
-      "populate[prototypes][populate]": "*",
-      "populate[weGotYou][populate]": "*",
-      "populate[brief][populate]": "*",
-      "populate[featuresSimplified][populate]": "*",
-      "populate[accordion][populate]": "*",
-      "populate[numbers][populate]": "*",
-      // Sections with repeatable sub-components that have their own images
-      "populate[whyUs][populate][cards][populate]": "*",
-      "populate[process][populate][processCards][populate]": "*",
-      "populate[support][populate][cards][populate]": "*",
-      "populate[designsAdapt][populate][cards][populate]": "*",
-      "populate[moreAbout][populate][cards][populate]": "*",
-      "populate[seo][populate]": "*",
+  const results = await getCollection<Record<string, unknown>>(
+    "/service-pages",
+    {
+      revalidate: 300,
+      query: {
+        "filters[slug][$eq]": slug,
+        // Flat sections — one level of populate gets all their fields + media
+        "populate[hero][populate]": "*",
+        "populate[prototypes][populate]": "*",
+        "populate[weGotYou][populate]": "*",
+        "populate[brief][populate]": "*",
+        "populate[featuresSimplified][populate]": "*",
+        "populate[accordion][populate]": "*",
+        "populate[numbers][populate]": "*",
+        // Sections with repeatable sub-components that have their own images
+        "populate[whyUs][populate][cards][populate]": "*",
+        "populate[process][populate][processCards][populate]": "*",
+        "populate[support][populate][cards][populate]": "*",
+        "populate[designsAdapt][populate][cards][populate]": "*",
+        "populate[moreAbout][populate][cards][populate]": "*",
+        "populate[seo][populate]": "*",
+      },
     },
-  });
+  );
 
   const raw = results[0];
   if (!raw) {
@@ -379,3 +409,15 @@ export async function getServicePageData(
 
   return mapServicePage(raw);
 }
+
+/* ------------------------------------------------------------------
+ * Talks Page (single type)
+ * ------------------------------------------------------------------ */
+
+export type TalksPageData = {
+  heading: string | null;
+  subheading: unknown;
+};
+
+export const getTalksPage = (): Promise<TalksPageData | null> =>
+  getSingle<TalksPageData>("/talks-page", { revalidate: 300 });

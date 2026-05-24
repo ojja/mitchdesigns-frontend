@@ -38,11 +38,16 @@ function FeaturedTalk({ talk }: { talk: Talk }) {
       <div className="flex flex-1 flex-col justify-between self-stretch py-10">
         <div className="flex items-center gap-5">
           <div className="flex flex-wrap gap-2">
-            {talk.tags?.map((tag) => <TagPill key={tag} label={tag} />)}
+            {talk.category
+              ? <TagPill label={talk.category} />
+              : talk.tags?.map((tag) => <TagPill key={tag} label={tag} />)
+            }
           </div>
-          <span className="text-[16px] leading-tight text-[#515151]">
-            {formatDate(talk.date)}
-          </span>
+          {(talk.publishedAt ?? talk.date) && (
+            <span className="text-[16px] leading-tight text-[#515151]">
+              {formatDate((talk.publishedAt ?? talk.date)!)}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-2.5">
@@ -77,11 +82,16 @@ function SmallTalkCard({ talk }: { talk: Talk }) {
       <div className="flex flex-col gap-8">
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-wrap gap-2">
-            {talk.tags?.map((tag) => <TagPill key={tag} label={tag} />)}
+            {talk.category
+              ? <TagPill label={talk.category} />
+              : talk.tags?.map((tag) => <TagPill key={tag} label={tag} />)
+            }
           </div>
-          <span className="shrink-0 text-[16px] leading-tight text-[#515151]">
-            {formatDate(talk.date)}
-          </span>
+          {(talk.publishedAt ?? talk.date) && (
+            <span className="shrink-0 text-[16px] leading-tight text-[#515151]">
+              {formatDate((talk.publishedAt ?? talk.date)!)}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-2.5">

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { TalksList } from "@/features/talks";
-import { getTalks } from "@/lib/cms";
+import { TalksList, TalksHero } from "@/features/talks";
+import { getTalks, getTalksPage } from "@/lib/cms";
 import { fixtureTalks } from "@/lib/cms/fixtures";
 import { JsonLd } from "@/components/seo/JsonLd";
 
@@ -27,7 +27,10 @@ async function safe<T>(p: Promise<T[]>, fallback: T[]): Promise<T[]> {
 }
 
 export default async function TalksIndexPage() {
-  const talks = await safe(getTalks(), fixtureTalks);
+  const [talks, talksPage] = await Promise.all([
+    safe(getTalks(), fixtureTalks),
+    getTalksPage(),
+  ]);
 
   const itemListSchema = {
     "@context": "https://schema.org",
@@ -44,6 +47,10 @@ export default async function TalksIndexPage() {
   return (
     <>
       <JsonLd data={itemListSchema} />
+      <TalksHero
+        heading={talksPage?.heading ?? undefined}
+        subheading={talksPage?.subheading ?? undefined}
+      />
       <TalksList talks={talks} />
     </>
   );

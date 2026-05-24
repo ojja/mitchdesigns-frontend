@@ -62,11 +62,12 @@ function FeaturedCard({ talk }: { talk: Talk }) {
       <div className="flex flex-1 self-stretch flex-col items-start justify-between py-10">
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-2">
-            {talk.tags?.map((tag) => (
-              <TagPill key={tag} label={tag} />
-            ))}
+            {talk.category
+              ? <TagPill label={talk.category} />
+              : talk.tags?.map((tag) => <TagPill key={tag} label={tag} />)
+            }
           </div>
-          <Meta date={talk.date} readTime={talk.readTime} />
+          <Meta date={(talk.publishedAt ?? talk.date) ?? ""} readTime={talk.readTime} />
         </div>
 
         <div className="flex flex-col gap-2.5">
@@ -108,11 +109,12 @@ function TalkCard({ talk }: { talk: Talk }) {
       <div className="flex flex-col gap-8">
         <div className="flex items-center justify-between">
           <div className="flex flex-wrap gap-2">
-            {talk.tags?.map((tag) => (
-              <TagPill key={tag} label={tag} />
-            ))}
+            {talk.category
+              ? <TagPill label={talk.category} />
+              : talk.tags?.map((tag) => <TagPill key={tag} label={tag} />)
+            }
           </div>
-          <Meta date={talk.date} readTime={talk.readTime} />
+          <Meta date={(talk.publishedAt ?? talk.date) ?? ""} readTime={talk.readTime} />
         </div>
 
         <div className="flex flex-col gap-2.5">
@@ -132,15 +134,9 @@ function TalkCard({ talk }: { talk: Talk }) {
 
 export interface TalksListProps {
   talks: Talk[];
-  title?: string;
-  subtitle?: string;
 }
 
-export function TalksList({
-  talks,
-  title = "Talks",
-  subtitle = "Explore Insights, Stories, and Ideas Shaping Creativity and Modern Design.",
-}: TalksListProps) {
+export function TalksList({ talks }: TalksListProps) {
   const featured = talks.find((t) => t.featured);
   const rest = talks.filter((t) => !t.featured);
 
@@ -151,19 +147,7 @@ export function TalksList({
 
   return (
     <Section className="py-[120px]">
-      <div className="flex flex-col gap-[100px]">
-        {/* Page heading */}
-        <div className="flex items-end justify-between leading-[1.1]">
-          <h1 className="text-[92px] font-black tracking-[0.01em] text-space-grey">
-            {title}
-          </h1>
-          <p className="max-w-[40%] text-[32px] font-bold tracking-[0.01em] text-space-grey">
-            {subtitle}
-          </p>
-        </div>
-
-        {/* Post list */}
-        <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-10">
           {featured && <FeaturedCard talk={featured} />}
 
           {rows.map(([a, b], i) => (
@@ -173,7 +157,6 @@ export function TalksList({
             </div>
           ))}
         </div>
-      </div>
     </Section>
   );
 }
