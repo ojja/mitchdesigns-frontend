@@ -35,7 +35,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const talkRoutes: MetadataRoute.Sitemap = fixtureTalks.map((t) => ({
     url: `${BASE}/talks/${t.slug}`,
-    lastModified: new Date(t.date),
+    lastModified: new Date(t.publishedAt ?? t.date ?? Date.now()),
     priority: 0.7,
     changeFrequency: "monthly",
   }));
