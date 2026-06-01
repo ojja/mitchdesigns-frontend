@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { HeaderConfig } from "@/context/HeaderConfigContext";
-import { Hero, HeroSection } from "@/features/hero";
+import { CreativeHero, HeroSection } from "@/features/hero";
 import { AboutSection } from "@/features/about";
 import { ClientLogos } from "@/features/clients";
 import { ClientsTrust } from "@/features/ClientsTrust";
@@ -130,12 +130,9 @@ export default async function HomePage() {
     <>
       <JsonLd data={homeGraph} />
       <HeaderConfig sticky={false} />
-      <Hero
-        eyebrow="MitchDesigns — Website & Mobile App Design Company Based in Egypt"
-        headline="Start Building Digital Experiences that"
-      />
+      <CreativeHero />
 
-      <HeroSection />
+      {/* <HeroSection /> */}
 
       <AboutSection />
 

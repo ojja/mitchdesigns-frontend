@@ -167,6 +167,9 @@ const timelineOptions = [
   { label: "Just exploring", value: "exploring" },
 ] as const satisfies readonly QuoteStepOption[];
 
+/** Name + service-picker stages that precede the service-specific flow steps. */
+export const PICKER_STAGES = 2;
+
 const contactStep = (step: number): QuoteFormStep => ({
   id: "contact",
   step,
@@ -240,13 +243,13 @@ export const quoteFlows = {
         uploadLabel: "Browse File",
         helperText: "Choose a file or drag & drop it here.",
         validation: uploadValidation,
-        outcome: { type: "step", step: 4 },
+        outcome: { type: "step", step: 3 },
       },
       {
         id: "websiteLanguages",
         step: 3,
         kind: "form",
-        title: "Now, tell us more about your business",
+        title: "Tell us about your website goals",
         fields: [
           {
             id: "websiteLanguages",
@@ -263,14 +266,6 @@ export const quoteFlows = {
               },
             ],
           },
-        ],
-      },
-      {
-        id: "industry",
-        step: 4,
-        kind: "form",
-        title: "Now, tell us more about your business",
-        fields: [
           {
             id: "industry",
             label: "Which industry is your business in?",
@@ -294,8 +289,8 @@ export const quoteFlows = {
         ],
       },
       {
-        id: "websiteSections",
-        step: 5,
+        id: "industry",
+        step: 4,
         kind: "form",
         title: "Now, tell us more about your business",
         fields: [
@@ -343,7 +338,7 @@ export const quoteFlows = {
       },
       {
         id: "companyProfile",
-        step: 6,
+        step: 5,
         kind: "file-upload",
         title:
           "Do you have a company profile or presentation deck that precisely describes your business?",
@@ -414,7 +409,29 @@ export const quoteFlows = {
             type: "select",
             required: true,
             defaultValue: "egypt",
-            options: [{ label: "Egypt", value: "egypt" }],
+            options: [
+              { label: "Egypt", value: "egypt" },
+              { label: "Saudi Arabia", value: "saudi-arabia" },
+              { label: "United Arab Emirates", value: "uae" },
+              { label: "Kuwait", value: "kuwait" },
+              { label: "Qatar", value: "qatar" },
+              { label: "Bahrain", value: "bahrain" },
+              { label: "Oman", value: "oman" },
+              { label: "Jordan", value: "jordan" },
+              { label: "Lebanon", value: "lebanon" },
+              { label: "Morocco", value: "morocco" },
+              { label: "Tunisia", value: "tunisia" },
+              { label: "Algeria", value: "algeria" },
+              { label: "Libya", value: "libya" },
+              { label: "Iraq", value: "iraq" },
+              { label: "United Kingdom", value: "uk" },
+              { label: "United States", value: "us" },
+              { label: "Germany", value: "germany" },
+              { label: "France", value: "france" },
+              { label: "Canada", value: "canada" },
+              { label: "Australia", value: "australia" },
+              { label: "Other", value: "other" },
+            ],
           },
           {
             id: "companyStage",

@@ -7,7 +7,10 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
-import { quoteServiceOptions, type QuoteService } from "@/lib/quote/schema";
+import { quoteServiceOptions, getStepCount, PICKER_STAGES, type QuoteService } from "@/lib/quote/schema";
+import { ArrowRight } from "@/components/icons/ArrowRight";
+import { QuoteProgressBar } from "./QuoteProgressBar";
+import { ArrowLeftHand } from "@/components/icons/ArrowLeftHand";
 
 const STORAGE_KEY = "mitchdesigns.quote.lead";
 
@@ -77,9 +80,14 @@ export function ServicePicker() {
     router.push(selectedHref);
   }
 
+  const pickerStep = stage === "name" ? 1 : 2;
+  const totalSteps = PICKER_STAGES + (selectedService ? getStepCount(selectedService) : 6);
+
   return (
+    <>
+      <QuoteProgressBar currentStep={pickerStep} totalSteps={totalSteps} />
     <section className="container-page flex min-h-[calc(100dvh-4rem)] items-start justify-center py-8 md:items-center md:py-12">
-      <div className="relative w-full max-w-[790px] rounded-card-sm bg-bg px-6 py-9 shadow-soft-lg ring-1 ring-border md:px-12 md:py-11">
+      <div className="relative w-full max-w-195 rounded-card-sm bg-bg px-6 py-9 shadow-soft-lg ring-1 ring-border md:px-10 md:py-10">
         <button
           type="button"
           aria-label={stage === "name" ? "Back to homepage" : "Back"}
@@ -90,24 +98,22 @@ export function ServicePicker() {
             }
             router.push("/");
           }}
-          className="absolute left-6 top-9 grid h-9 w-9 place-items-center rounded-full text-fg transition-colors hover:bg-bg-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:left-10"
+          className="absolute left-6 top-9 h-9 w-9 place-items-center rounded-full text-fg transition-colors hover:bg-bg-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:left-10 cursor-pointer flex items-center justify-center"
         >
-          <Icon size={22}>
-            <path d="M15 18l-6-6 6-6" />
-          </Icon>
+          <ArrowLeftHand/>
         </button>
 
         {stage === "name" ? (
-          <form onSubmit={handleNameSubmit} className="mx-auto max-w-[500px]">
-            <header className="text-center">
+          <form onSubmit={handleNameSubmit} className="mx-auto">
+            <div className="text-center">
               <h1 className="text-hero-5 font-bold md:text-hero-4">
-                Let&apos;s start
+                {`Let’s start`}
               </h1>
               <p className="mt-4 text-lg text-fg md:text-xl">
                 Just answer a few quick questions, and our team will send your
                 personalized estimate within 48 hours.
               </p>
-            </header>
+            </div>
 
             <div className="mt-11">
               <label htmlFor="quote-first-name" className="text-base font-medium">
@@ -118,7 +124,7 @@ export function ServicePicker() {
                 name="firstName"
                 value={firstName}
                 onChange={(event) => setFirstName(event.target.value)}
-                className="mt-2 h-11 rounded-[3px] border-grey-500 px-4"
+                className="mt-2 h-11 px-4"
                 autoComplete="given-name"
                 required
               />
@@ -129,27 +135,25 @@ export function ServicePicker() {
                 type="submit"
                 size="lg"
                 disabled={!canContinueFromName}
-                className="h-[68px] min-w-[200px] text-base uppercase md:min-w-[250px]"
+                className="h-[68px] text-base uppercase w-[200px] font-medium"
               >
-                Next
-                <Icon size={22}>
-                  <path d="M5 12h14" />
-                  <path d="M13 6l6 6-6 6" />
-                </Icon>
+                <span>
+                  Next
+                </span>
+                <ArrowRight />
               </Button>
             </div>
           </form>
         ) : (
           <form onSubmit={handleServiceSubmit}>
-            <header className="mx-auto max-w-[640px] text-center">
-              <h1 className="text-hero-5 font-bold md:text-hero-4">
+            <div className="mx-auto text-center">
+              <h1 className="text-hero-5 font-bold md:text-hero-5">
                 What brings you here to Mitch Designs
               </h1>
-              <p className="mt-4 text-lg text-fg md:text-xl">
-                Get an accurate project estimate tailored to your goals - no
-                meetings, no waiting.
+              <p className="mt-4 text-lg text-fg md:text-lg text-balance">
+                Get an accurate project estimate tailored to <br className="max-md:hidden"/> your goals — no meetings, no waiting.
               </p>
-            </header>
+            </div>
 
             <div className="mt-11">
               <p className="text-lg text-fg">I Want to build a...</p>
@@ -167,10 +171,10 @@ export function ServicePicker() {
                   <label
                     key={option.service}
                     className={cn(
-                      "grid min-h-[150px] place-items-center rounded-card-sm border border-grey-500 bg-bg px-6 text-center text-lg font-medium transition-colors md:min-h-[150px] md:text-xl",
-                      "focus-within:ring-2 focus-within:ring-accent focus-within:ring-offset-2 focus-within:ring-offset-bg",
+                      "grid min-h-[150px] place-items-center rounded-card-sm border border-grey-500 bg-bg px-6 text-center text-lg font-medium transition-colors md:min-h-[150px] md:text-xl cursor-pointer",
+
                       selectedService === option.service &&
-                        "border-fg bg-fg text-bg",
+                      "border-fg bg-fg text-bg",
                     )}
                   >
                     <input
@@ -181,6 +185,11 @@ export function ServicePicker() {
                       onChange={() => {
                         setSelectedService(option.service);
                         setShowServiceError(false);
+                      }}
+                      onClick={() => {
+                        if (selectedService === option.service) {
+                          setSelectedService(null);
+                        }
                       }}
                       className="sr-only"
                     />
@@ -207,5 +216,6 @@ export function ServicePicker() {
         )}
       </div>
     </section>
+    </>
   );
 }
