@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "server-only";
 import { getCollection, getSingle } from "./strapi";
+import { strapiMedia } from "./media";
 import type {
   CaseStudy,
   Career,
@@ -133,7 +134,7 @@ export const getService = async (
 export const getTestimonials = () =>
   getCollection<Testimonial>("/testimonials", {
     revalidate: 300,
-    query: { populate: "avatar" },
+    query: { "populate[0]": "avatar", "populate[1]": "companyLogo" },
   });
 
 /* ------------------------------------------------------------------
@@ -158,7 +159,7 @@ export async function getClientLogos(): Promise<
     });
     return items.map((item) => ({
       name: item.name,
-      src: item.logo.url,
+      src: strapiMedia(item.logo.url) ?? item.logo.url,
       alt: item.logo.alternativeText ?? item.name,
     }));
   } catch {

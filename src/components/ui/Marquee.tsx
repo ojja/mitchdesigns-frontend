@@ -31,9 +31,12 @@ export function Marquee({
     // paddingRight on the chunk equals gap, so offsetWidth = content + trailing gap
     // → translating by exactly -offsetWidth loops back to an identical visual position
     const width = el.offsetWidth;
-    const to = direction === "left" ? -width : width;
+    // Left: 0 → -width  (chunk2 fills from right as chunk1 exits left)
+    // Right: -width → 0 (chunk2 sits before chunk1; content appears to move right)
+    const [from, to] = direction === "left" ? [0, -width] : [-width, 0];
 
-    controlsRef.current = animate(x, [0, to], {
+    x.set(from);
+    controlsRef.current = animate(x, [from, to], {
       duration: width / speed,
       ease: "linear",
       repeat: Infinity,

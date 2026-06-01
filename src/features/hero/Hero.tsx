@@ -52,7 +52,7 @@ export function Hero({
         {eyebrow ? (
           <motion.p
             variants={fadeUp}
-            className="text-sm font-normal uppercase tracking-[0.01em] text-grey-500"
+            className="text-sm font-normal uppercase tracking-[0.01em] text-grey-500 relative z-30"
           >
             {eyebrow}
           </motion.p>
@@ -61,7 +61,7 @@ export function Hero({
         <motion.h1
           variants={fadeUp}
           transition={{ ease: easeOutSoft }}
-          className="mt-[10px] font-black tracking-[0.01em] text-white text-[2.75rem] leading-[1.05] md:text-[4.5rem] md:leading-[1.08] lg:text-hero-1"
+          className="mt-[10px] font-black tracking-[0.01em] text-white text-[2.75rem] leading-[1.05] md:text-[4.5rem] md:leading-[1.08] lg:text-hero-1 relative z-30"
         >
           {headline}{" "}
           <span

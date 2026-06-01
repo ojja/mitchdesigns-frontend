@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
+  AnimatePresence,
   motion,
   useMotionValue,
   useSpring,
   useTransform,
 } from 'framer-motion';
 import { easeOutSoft } from '@/lib/motion';
+import { VideoLightbox } from './VideoLightbox';
 
 const DOTS_BG = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect width='25' height='25' fill='%231d1d1b'/%3E%3C/svg%3E")`;
 
@@ -15,11 +17,24 @@ const DOTS_BG = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 import type { CSSProperties } from 'react';
 import { Hero } from './Hero';
 
+const PREVIEW_VIDEOS = [
+  '/videos/hero-preview-1.mp4',
+  '/videos/hero-preview-2.mp4',
+  '/videos/hero-preview-3.mp4',
+];
+
+const FULL_VIDEOS = [
+  '/videos/hero-full-1.mp4',
+  '/videos/hero-full-2.mp4',
+  '/videos/hero-full-3.mp4',
+];
+
 type CardDef = {
   id: number;
   label: string;
   sub: string;
-  image?: string;
+  video: string;
+  fullVideo: string;
   depth: number;
   pos: CSSProperties;
   centered?: boolean;
@@ -39,7 +54,8 @@ const CARDS: CardDef[] = [
     id: 1,
     label: 'Mountain View',
     sub: 'Website Design',
-    image: 'https://picsum.photos/seed/mv/300/400',
+    video: PREVIEW_VIDEOS[0],
+    fullVideo: FULL_VIDEOS[0],
     depth: 0.038,
     pos: { left: '2%', top: '10%' },
     rotate: -10,
@@ -52,7 +68,8 @@ const CARDS: CardDef[] = [
     id: 2,
     label: 'Real Estate',
     sub: 'Mobile App',
-    image: 'https://picsum.photos/seed/re/300/400',
+    video: PREVIEW_VIDEOS[1],
+    fullVideo: FULL_VIDEOS[1],
     depth: 0.065,
     pos: { right: '3%', top: '8%' },
     rotate: 9,
@@ -65,7 +82,8 @@ const CARDS: CardDef[] = [
     id: 3,
     label: 'Orderbase',
     sub: 'SaaS Product',
-    image: 'https://picsum.photos/seed/ob/400/260',
+    video: PREVIEW_VIDEOS[2],
+    fullVideo: FULL_VIDEOS[2],
     depth: 0.028,
     pos: { left: '0%', bottom: '12%' },
     rotate: 7,
@@ -78,7 +96,8 @@ const CARDS: CardDef[] = [
     id: 4,
     label: 'Travel Booking',
     sub: 'Product Design',
-    image: 'https://picsum.photos/seed/tb/400/260',
+    video: PREVIEW_VIDEOS[0],
+    fullVideo: FULL_VIDEOS[0],
     depth: 0.052,
     pos: { right: '2%', bottom: '16%' },
     rotate: -7,
@@ -92,7 +111,8 @@ const CARDS: CardDef[] = [
     id: 5,
     label: 'Brand Identity',
     sub: 'Visual Design',
-    image: 'https://picsum.photos/seed/bi/320/240',
+    video: PREVIEW_VIDEOS[1],
+    fullVideo: FULL_VIDEOS[1],
     depth: 0.044,
     pos: { left: '50%', top: '3%' },
     centered: true,
@@ -107,7 +127,8 @@ const CARDS: CardDef[] = [
     id: 6,
     label: 'E-Commerce',
     sub: 'Web Platform',
-    image: 'https://picsum.photos/seed/ec/400/260',
+    video: PREVIEW_VIDEOS[2],
+    fullVideo: FULL_VIDEOS[2],
     depth: 0.035,
     pos: { left: '50%', bottom: '8%' },
     centered: true,
@@ -123,7 +144,8 @@ const CARDS: CardDef[] = [
     id: 7,
     label: 'Fintech App',
     sub: 'Mobile Design',
-    image: 'https://picsum.photos/seed/ft/260/360',
+    video: PREVIEW_VIDEOS[0],
+    fullVideo: FULL_VIDEOS[0],
     depth: 0.055,
     pos: { left: '16%', top: '42%' },
     rotate: -6,
@@ -137,7 +159,8 @@ const CARDS: CardDef[] = [
     id: 8,
     label: 'Healthcare',
     sub: 'Web App',
-    image: 'https://picsum.photos/seed/hc/260/360',
+    video: PREVIEW_VIDEOS[1],
+    fullVideo: FULL_VIDEOS[1],
     depth: 0.06,
     pos: { right: '15%', top: '40%' },
     rotate: 6,
@@ -151,7 +174,8 @@ const CARDS: CardDef[] = [
     id: 9,
     label: 'Food Delivery',
     sub: 'Mobile App',
-    image: 'https://picsum.photos/seed/fd/220/300',
+    video: PREVIEW_VIDEOS[2],
+    fullVideo: FULL_VIDEOS[2],
     depth: 0.07,
     pos: { left: '7%', top: '45%' },
     rotate: 11,
@@ -165,7 +189,8 @@ const CARDS: CardDef[] = [
     id: 10,
     label: 'EdTech Platform',
     sub: 'Web Design',
-    image: 'https://picsum.photos/seed/et/220/300',
+    video: PREVIEW_VIDEOS[0],
+    fullVideo: FULL_VIDEOS[0],
     depth: 0.042,
     pos: { right: '6%', top: '48%' },
     rotate: -10,
@@ -182,10 +207,12 @@ function FloatingCard({
   card,
   rawX,
   rawY,
+  onClickVideo,
 }: {
   card: CardDef;
   rawX: ReturnType<typeof useMotionValue<number>>;
   rawY: ReturnType<typeof useMotionValue<number>>;
+  onClickVideo: (src: string, label: string) => void;
 }) {
   const [hovered, setHovered] = useState(false);
 
@@ -201,6 +228,7 @@ function FloatingCard({
         ...card.pos,
         ...(card.centered ? { marginLeft: `${-card.width / 2}px` } : {}),
         zIndex: hovered ? 20 : (card.baseZ ?? 10),
+        cursor: 'pointer',
       }}
       animate={{
         rotate: hovered ? 0 : card.rotate,
@@ -209,6 +237,7 @@ function FloatingCard({
       transition={{ type: 'spring', stiffness: 180, damping: 22 }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
+      onClick={() => onClickVideo(card.fullVideo, card.label)}
     >
       {/* Card body */}
       <div
@@ -230,24 +259,24 @@ function FloatingCard({
           justifyContent: 'flex-end',
         }}
       >
-        {/* Project image */}
-        {card.image && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={card.image}
-            alt=""
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              opacity: hovered ? 0.85 : 0.55,
-              transition: 'opacity 0.3s ease',
-            }}
-          />
-        )}
+        {/* Project video preview */}
+        <video
+          src={card.video}
+          autoPlay
+          muted
+          loop
+          playsInline
+          aria-hidden
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: hovered ? 0.9 : 0.5,
+            transition: 'opacity 0.3s ease',
+          }}
+        />
 
         {/* Decorative grid lines */}
         <svg
@@ -277,6 +306,36 @@ function FloatingCard({
           </defs>
           <rect width="100%" height="100%" fill={`url(#grid-${card.id})`} />
         </svg>
+
+        {/* Play icon — shown on hover */}
+        <motion.div
+          animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.7 }}
+          transition={{ duration: 0.2 }}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+          }}
+        >
+          <div style={{
+            width: 44,
+            height: 44,
+            borderRadius: '50%',
+            background: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: `1.5px solid ${card.border}`,
+          }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+              <path d="M4 2.5l9 5.5-9 5.5V2.5z" fill="white" />
+            </svg>
+          </div>
+        </motion.div>
 
         {/* Accent bar */}
         <div
@@ -342,7 +401,7 @@ function Cursor({
   rawY: ReturnType<typeof useMotionValue<number>>;
   hovering: boolean;
 }) {
-  // These spring values track absolute page position
+  // Track position relative to the section (not the viewport)
   const cx = useSpring(rawX, { stiffness: 300, damping: 30 });
   const cy = useSpring(rawY, { stiffness: 300, damping: 30 });
 
@@ -350,7 +409,7 @@ function Cursor({
     <motion.div
       aria-hidden
       style={{
-        position: 'fixed',
+        position: 'absolute',
         left: cx,
         top: cy,
         translateX: '-50%',
@@ -373,10 +432,11 @@ function Cursor({
 export function CreativeHero() {
   const sectionRef = useRef<HTMLElement>(null);
   const [cardHovered, setCardHovered] = useState(false);
+  const [lightbox, setLightbox] = useState<{ src: string; label: string } | null>(null);
 
-  // Absolute cursor position (for the visual cursor ring)
-  const absX = useMotionValue(-200);
-  const absY = useMotionValue(-200);
+  // Section-relative cursor position (for the visual cursor ring)
+  const curX = useMotionValue(-200);
+  const curY = useMotionValue(-200);
 
   // Cursor offset from section center (for parallax — range roughly ±viewport/2)
   const relX = useMotionValue(0);
@@ -391,28 +451,37 @@ export function CreativeHero() {
     if (!section) return;
 
     const onMove = (e: MouseEvent) => {
-      absX.set(e.clientX);
-      absY.set(e.clientY);
-
       const rect = section.getBoundingClientRect();
+      // Position relative to section top-left (for absolute cursor)
+      curX.set(e.clientX - rect.left);
+      curY.set(e.clientY - rect.top + section.scrollTop);
+      // Offset from center (for parallax)
       relX.set(e.clientX - (rect.left + rect.width / 2));
       relY.set(e.clientY - (rect.top + rect.height / 2));
     };
 
+    const onLeave = () => {
+      curX.set(-200);
+      curY.set(-200);
+    };
+
     section.addEventListener('mousemove', onMove);
-    return () => section.removeEventListener('mousemove', onMove);
-  }, [absX, absY, relX, relY]);
+    section.addEventListener('mouseleave', onLeave);
+    return () => {
+      section.removeEventListener('mousemove', onMove);
+      section.removeEventListener('mouseleave', onLeave);
+    };
+  }, [curX, curY, relX, relY]);
 
   return (
     <>
-      <Cursor rawX={absX} rawY={absY} hovering={cardHovered} />
-
-      <section
-        ref={sectionRef}
+    <section
+      ref={sectionRef}
         data-theme="dark"
         className="relative overflow-hidden"
         style={{ minHeight: '100svh', background: '#060606' }}
       >
+        <Cursor rawX={curX} rawY={curY} hovering={cardHovered} />
         {/* Dots pattern */}
         <div
           aria-hidden
@@ -445,18 +514,34 @@ export function CreativeHero() {
               onMouseEnter={() => setCardHovered(true)}
               onMouseLeave={() => setCardHovered(false)}
             >
-              <FloatingCard card={card} rawX={springX} rawY={springY} />
+              <FloatingCard
+                card={card}
+                rawX={springX}
+                rawY={springY}
+                onClickVideo={(src, label) => setLightbox({ src, label })}
+              />
             </div>
           ))}
         </div>
 
-        <div className="relative" style={{ zIndex: 30 }}>
+        <div>
           <Hero
             eyebrow="MitchDesigns — Website & Mobile App Design Company Based in Egypt"
             headline="Start Building Digital Experiences that"
           />
         </div>
       </section>
+
+      <AnimatePresence>
+        {lightbox && (
+          <VideoLightbox
+            key="lightbox"
+            src={lightbox.src}
+            alt={lightbox.label}
+            onClose={() => setLightbox(null)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }

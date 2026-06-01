@@ -80,14 +80,22 @@ function ServiceRow({ service, isOpen, onToggle }: ServiceRowProps) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* White bg — scaleX from center */}
+      {/* White bg — bleeds edge-to-edge, scaleX from center */}
       <motion.div
         aria-hidden
         initial={{ scaleX: 0, scaleY: 0 }}
         animate={{ scaleX: active ? 1 : 0, scaleY: active ? 1 : 0 }}
         transition={{ type: "spring", stiffness: 320, damping: 30 }}
-        className="pointer-events-none absolute inset-0 bg-white"
-        style={{ transformOrigin: "center", zIndex: 0 }}
+        className="pointer-events-none absolute bg-white"
+        style={{
+          top: 0,
+          bottom: 0,
+          left: "50%",
+          translateX: "-50%",
+          width: "100vw",
+          transformOrigin: "center",
+          zIndex: 0,
+        }}
       />
 
       {/* Row header */}

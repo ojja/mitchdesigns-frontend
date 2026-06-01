@@ -73,14 +73,11 @@ function ReviewCard({ t }: { t: Testimonial & { id: number } }) {
 }
 
 export function TestimonialMarquee({ testimonials }: TestimonialMarqueeProps) {
-  const half = Math.ceil(testimonials.length / 2);
-  const rowA = testimonials.slice(0, half);
-  const rowB = testimonials.slice(half);
-
+  console.log("Rendering TestimonialMarquee with testimonials:", testimonials);
   return (
-    <Section theme="dark" className="overflow-hidden py-20">
+    <Section theme="dark" bleed className="overflow-hidden py-20">
       {/* Header */}
-      <div className="mb-10 flex flex-col items-center gap-3.5 text-center">
+      <div className="container-page mb-10 flex flex-col items-center gap-3.5 text-center">
         <h2 className="relative inline-flex items-center text-hero-3 font-bold text-white">
           Loved By Clients
           <span className="absolute -right-8 -top-1 rotate-15">
@@ -92,20 +89,18 @@ export function TestimonialMarquee({ testimonials }: TestimonialMarqueeProps) {
         </p>
       </div>
 
-      {/* Marquee rows */}
+      {/* Marquee rows — both use all testimonials so neither row ever runs short */}
       <div className="relative flex flex-col gap-10">
         <Marquee speed={40} gap={40}>
-          {rowA.map((t) => (
+          {testimonials.map((t) => (
             <ReviewCard key={`a-${t.id}`} t={t} />
           ))}
         </Marquee>
-        {rowB.length > 0 && (
-          <Marquee speed={40} gap={40} direction="right">
-            {rowB.map((t) => (
-              <ReviewCard key={`b-${t.id}`} t={t} />
-            ))}
-          </Marquee>
-        )}
+        <Marquee speed={40} gap={40} direction="right">
+          {testimonials.map((t) => (
+            <ReviewCard key={`b-${t.id}`} t={t} />
+          ))}
+        </Marquee>
 
         {/* Edge fade gradients */}
         <div

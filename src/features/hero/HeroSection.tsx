@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { Close } from "@/components/icons/Close";
+import { VideoLightbox } from "./VideoLightbox";
 
 // TODO: replace preview/video with real assets
 const CARDS = [
@@ -40,55 +40,6 @@ const SPREAD_X = ["0vw", "82vw", "164vw"] as const;
 
 const DOTS_BG = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect width='25' height='25' fill='%231d1d1b'/%3E%3C/svg%3E")`;
 
-function VideoLightbox({
-  src,
-  alt,
-  onClose,
-}: {
-  src: string;
-  alt: string;
-  onClose: () => void;
-}) {
-  return (
-    <motion.div
-      role="dialog"
-      aria-modal="true"
-      aria-label={alt}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
-      className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 p-4"
-      onClick={onClose}
-    >
-      <button
-        type="button"
-        aria-label="Close video"
-        onClick={onClose}
-        className="absolute right-6 top-6 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-      >
-        <Close size={20} />
-      </button>
-
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-5xl overflow-hidden rounded-[20px]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <video
-          src={src}
-          controls
-          autoPlay
-          className="h-auto w-full"
-          aria-label={alt}
-        />
-      </motion.div>
-    </motion.div>
-  );
-}
 
 export function HeroSection() {
   const wrapperRef = useRef<HTMLDivElement>(null);
