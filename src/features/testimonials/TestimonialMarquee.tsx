@@ -73,7 +73,7 @@ function ReviewCard({ t }: { t: Testimonial & { id: number } }) {
 }
 
 export function TestimonialMarquee({ testimonials }: TestimonialMarqueeProps) {
-  console.log("Rendering TestimonialMarquee with testimonials:", testimonials);
+
   return (
     <Section theme="dark" bleed className="overflow-hidden py-20">
       {/* Header */}
