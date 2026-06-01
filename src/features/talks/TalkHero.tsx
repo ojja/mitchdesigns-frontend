@@ -74,7 +74,6 @@ export function TalkHero({ talk }: { talk: Talk }) {
         {/* Cover image — full width */}
         {talk.cover?.url && (
           <div className="relative aspect-[1392/450] w-full overflow-hidden rounded-[4px]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={talk.cover.url}
               alt={talk.cover.alternativeText ?? talk.title}

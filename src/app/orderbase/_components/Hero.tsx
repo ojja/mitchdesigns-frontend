@@ -132,7 +132,6 @@ export function Hero({
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
           >
             {image ? (
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={image} alt={imageAlt} className="w-full rounded-card" />
             ) : (
               <div className="w-full aspect-[1048/1124] rounded-card bg-white/5 border border-white/10 flex items-center justify-center">

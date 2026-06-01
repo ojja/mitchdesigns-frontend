@@ -149,7 +149,6 @@ function BlockImage({ block }: { block: ImageBlock }) {
   const caption = block.image.caption ?? block.image.alternativeText;
   return (
     <figure className="flex flex-col items-center gap-2">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={block.image.url}
         alt={block.image.alternativeText ?? ""}
@@ -229,7 +228,6 @@ function TalkSections({ sections }: { sections?: BlogSection[] }) {
         if (section.__component === "blocks.media-block") {
           return (
             <figure key={i} className="flex flex-col items-center gap-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={section.file.url}
                 alt={section.file.alternativeText ?? section.caption ?? ""}

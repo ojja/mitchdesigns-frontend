@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export interface ChallengeFeature {
   image?: string;
   title: string;
@@ -55,8 +57,7 @@ function ChallengeCard({ image, title, description }: ChallengeFeature) {
       {/* Illustration / image area */}
       <div className="w-full aspect-[309/242] rounded-[12px] overflow-hidden bg-white/5">
         {image ? (
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={image} alt={title} className="w-full h-full object-cover" />
+          <Image src={image} alt={title} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <span className="text-xs text-white/20">Image</span>

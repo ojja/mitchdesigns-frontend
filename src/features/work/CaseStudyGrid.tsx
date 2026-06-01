@@ -91,7 +91,6 @@ function CaseStudyRow({ cs }: { cs: CaseStudy & { id: number } }) {
             <div className="flex items-center gap-5">
               {cs.testimonial.avatar?.url ? (
                 <div className="relative size-16 shrink-0 overflow-hidden rounded-full">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={cs.testimonial.avatar.url}
                     alt={cs.testimonial.author}

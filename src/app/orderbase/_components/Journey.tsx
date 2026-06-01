@@ -105,7 +105,6 @@ function StepImage({ step }: { step: JourneyStep }) {
   return (
     <div className="w-full aspect-[555/518] rounded-card overflow-hidden bg-panel">
       {step.image ? (
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={step.image} alt={step.title} className="w-full h-full object-cover" />
       ) : (
         <div className="w-full h-full flex items-center justify-center">
