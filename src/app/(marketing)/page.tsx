@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { HeaderConfig } from "@/context/HeaderConfigContext";
-import { CreativeHero, HeroSection } from "@/features/hero";
+import { CreativeHero } from "@/features/hero";
 import { AboutSection } from "@/features/about";
 import { ClientLogos } from "@/features/clients";
 import { ClientsTrust } from "@/features/ClientsTrust";
@@ -131,8 +131,6 @@ export default async function HomePage() {
       <JsonLd data={homeGraph} />
       <HeaderConfig sticky={false} />
       <CreativeHero />
-
-      {/* <HeroSection /> */}
 
       <AboutSection />
 

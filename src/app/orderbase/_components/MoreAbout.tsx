@@ -27,6 +27,7 @@ export function MoreAbout({
         {/* Left — illustration / image */}
         <div className="shrink-0 w-[680px] self-stretch">
           {media ? (
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={media} alt="" className="w-full h-full object-cover rounded-card" />
           ) : (
             <div className="w-full h-full min-h-[480px] rounded-card bg-panel flex items-center justify-center">

@@ -2,13 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
-  AnimatePresence,
   motion,
   useMotionValue,
   useSpring,
   useTransform,
 } from 'framer-motion';
-import { easeOutSoft, fadeUp, stagger } from '@/lib/motion';
+import { easeOutSoft } from '@/lib/motion';
 
 const DOTS_BG = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect width='25' height='25' fill='%231d1d1b'/%3E%3C/svg%3E")`;
 
@@ -192,9 +191,6 @@ function FloatingCard({
 
   const px = useTransform(rawX, (v) => v * card.depth);
   const py = useTransform(rawY, (v) => v * card.depth);
-
-  const [aw, ah] = card.aspectRatio.split('/').map(Number);
-  const aspectNum = aw / ah;
 
   return (
     <motion.div

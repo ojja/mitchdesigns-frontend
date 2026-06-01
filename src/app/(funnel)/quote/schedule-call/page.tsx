@@ -12,7 +12,7 @@ export default function ScheduleCallPage() {
       <div className="mx-auto max-w-5xl">
         <h1 className="text-hero-4 font-bold">Schedule a call</h1>
         <p className="mt-3 text-lg text-fg-muted text-balance">
-          Pick a time that works for you and we'll walk through your project brief together.
+          Pick a time that works for you and we&apos;ll walk through your project brief together.
         </p>
         <div className="mt-10">
           <CalendlyEmbed />

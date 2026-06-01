@@ -46,7 +46,6 @@ export function StepRenderer({ service, flow, step }: Props) {
   const [state, setState] = useState<StoredLead>({});
   const [errors, setErrors] = useState<ErrorMap>({});
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     setState(readStoredLead());
@@ -212,14 +211,12 @@ export function StepRenderer({ service, flow, step }: Props) {
                   if (!file) { writeFileId(step.id, null); return; }
 
                   // Upload immediately so the ID is ready before final submit
-                  setUploading(true);
                   const fd = new FormData();
                   fd.append("files", file, file.name);
                   fetch("/api/upload", { method: "POST", body: fd })
                     .then((r) => r.json())
                     .then((data) => { if (data.id) writeFileId(step.id, data.id); })
-                    .catch((err) => console.error("File upload error:", err))
-                    .finally(() => setUploading(false));
+                    .catch((err) => console.error("File upload error:", err));
                 }}
               />
             )}

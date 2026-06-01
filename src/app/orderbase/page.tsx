@@ -75,6 +75,7 @@ export default function OrderbasePage() {
         secondaryCtaLabel="See How It Works"
         secondaryCtaHref="#"
       />
+      {/* eslint-disable @next/next/no-img-element */}
       <TrustedBrands
         brands={[
           { name: "Almaza", logo: <img src="/images/client-logos/Almaza.png" alt="Almaza" className="max-h-12 w-auto object-contain mix-blend-exclusion" /> },
